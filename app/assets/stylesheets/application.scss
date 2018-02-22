@@ -1,0 +1,48 @@
+/*
+ * This is a manifest file that'll be compiled into application.css, which will include all the files
+ * listed below.
+ *
+ * Any CSS and SCSS file within this directory, lib/assets/stylesheets, or any plugin's
+ * vendor/assets/stylesheets directory can be referenced here using a relative path.
+ *
+ * You're free to add application-wide styles to this file and they'll appear at the bottom of the
+ * compiled file so the styles you add here take precedence over styles defined in any other CSS/SCSS
+ * files in this directory. Styles in this file should be added after the last require_* statement.
+ * It is generally better to create a new file per style scope.
+ *
+ *= require_tree .
+ *= require_self
+ */
+
+$white:  #fefefe;
+$silver: #cccccc;
+$seashell: #f1f1f1;
+
+body {
+  background-color: $white;
+}
+
+.row {
+  display: flex;
+
+  .col-3 {
+    width: 300px;
+    margin: .5rem;
+    padding: 1rem;
+  }
+}
+
+.row.center{
+ justify-content: center; 
+}
+
+.row-column {
+  display: flex;
+  flex-direct: column;
+}
+
+.card {
+  border: 1px solid $silver;
+  padding: 1rem;
+  border-radius: .5rem;
+}
