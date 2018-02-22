@@ -15,6 +15,7 @@
  */
 
 $white:  #fefefe;
+$silver-grey: #efefef;
 $silver: #cccccc;
 $seashell: #f1f1f1;
 
@@ -22,13 +23,23 @@ body {
   background-color: $white;
 }
 
+
 .row {
   display: flex;
+  align-items: flex-start;
+
+  .list {
+    background-color: $seashell;
+  }
 
   .col-3 {
     width: 300px;
     margin: .5rem;
     padding: 1rem;
+
+    .card {
+      background-color: $white;
+    }
   }
 }
 
@@ -44,5 +55,10 @@ body {
 .card {
   border: 1px solid $silver;
   padding: 1rem;
-  border-radius: .5rem;
+  border-radius: .3rem;
+  margin-bottom: .5rem;
+}
+
+input {
+  display: inline-flex;
 }

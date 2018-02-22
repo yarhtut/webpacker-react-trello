@@ -7,51 +7,12 @@
 // To reference this file, add <%= javascript_pack_tag 'application' %> to the appropriate
 // layout file, like app/views/layouts/application.html.erb
 
-console.log('hello react')
 
 import React from 'react'
 import ReactDOM from 'react-dom'
-import PropTypes from 'prop-types'
+import Lists from './components/lists.jsx'
 
 
-class Lists extends React.Component {
-  constructor() {
-    super()
-    this.state = { 
-      lists: [],
-      cards: []
-    }
-  }
-
-  componentDidMount() {
-    fetch('/lists.json')
-      .then(res => res.json())
-      .then(res => this.setState({ lists: res }))
-    fetch('/cards.json')
-      .then(res => res.json())
-      .then(res => this.setState({ cards: res }))
-  }
-
-  render() {
-    const allLists = this.state.lists.map((list) => {
-        const allCards = this.state.cards.map((card) => {
-          if (card.list_id == list.id) {
-            return <div className='card'>{card.name}</div>
-          }
-        })
-      return (
-        <div className='col-3 card'>
-          <h4 key={ list.id }> {list.name}</h4>
-          <p key={ list.id }> {allCards}</p>
-        </div>
-      )
-    })
-    return <div className='row'>
-        { allLists }
-        <a href='/lists/new' className='btn col-3 card'> Add List</a> 
-      </div>
-  }
-}
 
 document.addEventListener('DOMContentLoaded', () => {
   ReactDOM.render(
