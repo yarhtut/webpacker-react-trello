@@ -33,19 +33,16 @@ class Lists extends React.Component {
   }
 
   render() {
-
     const allLists = this.state.lists.map((list) => {
-        this.state.cards.map((card) => {
-     console.log(card.list_id == list.id)     
+        const allCards = this.state.cards.map((card) => {
           if (card.list_id == list.id) {
-            debugger
-            console.log(card.name)
-            console.log('card.name')
+            return <div className='card'>{card.name}</div>
           }
         })
       return (
         <div className='col-3 card'>
           <h4 key={ list.id }> {list.name}</h4>
+          <p key={ list.id }> {allCards}</p>
         </div>
       )
     })
