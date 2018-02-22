@@ -17,6 +17,11 @@
   </div>
 
   <div class="field">
+    <%= form.label :name %>
+    <%= form.text_field :name, id: :card_name %>
+  </div>
+
+  <div class="field">
     <%= form.label :position %>
     <%= form.number_field :position, id: :card_position %>
   </div>

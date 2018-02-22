@@ -17,18 +17,32 @@ import PropTypes from 'prop-types'
 class Lists extends React.Component {
   constructor() {
     super()
-    this.state = { lists: [] }
+    this.state = { 
+      lists: [],
+      cards: []
+    }
   }
 
   componentDidMount() {
     fetch('/lists.json')
       .then(res => res.json())
       .then(res => this.setState({ lists: res }))
+    fetch('/cards.json')
+      .then(res => res.json())
+      .then(res => this.setState({ cards: res }))
   }
 
   render() {
+
     const allLists = this.state.lists.map((list) => {
-      console.log(list)
+        this.state.cards.map((card) => {
+     console.log(card.list_id == list.id)     
+          if (card.list_id == list.id) {
+            debugger
+            console.log(card.name)
+            console.log('card.name')
+          }
+        })
       return (
         <div className='col-3 card'>
           <h4 key={ list.id }> {list.name}</h4>

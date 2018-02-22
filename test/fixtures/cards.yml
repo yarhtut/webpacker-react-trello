@@ -2,8 +2,10 @@
 
 one:
   list: one
+  name: MyString
   position: 1
 
 two:
   list: two
+  name: MyString
   position: 1
