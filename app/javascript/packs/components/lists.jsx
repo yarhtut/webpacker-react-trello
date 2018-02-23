@@ -27,9 +27,10 @@ const getItemStyle = (isDragging, draggableStyle) => ({
   userSelect: 'none',
   padding: grid * 2,
   margin: `0 0 ${grid}px 0`,
+  borderRadius: 3,
 
   // change background colour if dragging
-  background: isDragging ? 'lightgreen' : 'grey',
+  background: isDragging ? 'lightgreen' : 'whiteSmoke',
 
   // styles we need to apply on draggables
   ...draggableStyle,
@@ -39,6 +40,8 @@ const getListStyle = isDraggingOver => ({
   background: isDraggingOver ? 'lightblue' : 'lightgrey',
   padding: grid,
   width: 250,
+  margin: 2,
+  borderRadius: 3,
 });
 
 
@@ -49,13 +52,11 @@ class Lists extends React.Component {
       lists: [],
       cards: [],
       value: '',
-      items: getItems(10)
     }
 
     this.onDragEnd = this.onDragEnd.bind(this);
     this.addCard = this.addCard.bind(this);
     this.handleCardText = this.handleCardText.bind(this);
-    this.moveCard = this.moveCard.bind(this)
   }
 
   componentDidMount() {
@@ -68,20 +69,19 @@ class Lists extends React.Component {
   }
 
   onDragEnd(result) {
-    // dropped outside the list
-    //    if (!result.destination) {
-    //      return;
-    //    }
-    //
-    //    const items = reorder(
-    //      this.state.items,
-    //      result.source.index,
-    //      result.destination.index
-    //    );
-    //
-    //    this.setState({
-    //      cards,
-    //    });
+    if (!result.destination) {
+      return;
+    }
+
+    const cards = reorder(
+      this.state.cards,
+      result.source.index,
+      result.destination.index
+    );
+
+    this.setState({
+      cards,
+    });
   }
 
   openForm(listId, e) {
@@ -92,6 +92,7 @@ class Lists extends React.Component {
     e.preventDefault();
     const token = document.querySelector(`meta[name='csrf-token']`).getAttribute('content');
     const data = {  list_id: listId, name:  this.state.value }
+    console.log(data)
 
     fetch(`/cards` , {
       body: JSON.stringify(data),
@@ -156,12 +157,11 @@ class Lists extends React.Component {
 
       const form = (this.state.formKey == list.id) ?
       (
-        <form >
-          <input type="text" value={this.state.value} onChange={this.handleCardText} onKeyPress={this.addCard.bind(this, list.id)} />
+        <form onSubmit={this.addCard.bind(this, list.id)} >
+          <input type="text" value={this.state.value} onChange={this.handleCardText} />
           <input type="submit" value="Add Card" />
         </form>
-      ) : ( <button onClick={this.openForm.bind(this,list.id)}>Add Card</button> )
-
+      ) : ( <button onClick={this.openForm.bind(this,list.id)} className='btn'>Add Card</button> )
 
       return (
         <DragDropContext onDragEnd={this.onDragEnd} className='col-3 card list'>

@@ -14,15 +14,26 @@
  *= require_self
  */
 
-$white:  #fefefe;
+$white: #fefefe;
 $silver-grey: #efefef;
 $silver: #cccccc;
 $seashell: #f1f1f1;
 
 body {
-  background-color: $white;
-}
+  //background-color: $white;
+  background-color: DodgerBlue;
 
+  h1 {
+    color: whiteSmoke;
+  }
+
+  h4 {
+    color: dimGrey;
+    text-decoration: underline;
+  }
+
+  color: grey;
+}
 
 .row {
   display: flex;
@@ -43,8 +54,8 @@ body {
   }
 }
 
-.row.center{
- justify-content: center; 
+.row.center {
+  justify-content: center;
 }
 
 .row-column {
@@ -59,6 +70,14 @@ body {
   margin-bottom: .5rem;
 }
 
+.btn {
+  padding: .3rem .5rem;
+  border-radius: 1rem;
+  border: 1px solid white;
+  color: dimGrey;
+}
+
 input {
   display: inline-flex;
+  height: 2rem;
 }
