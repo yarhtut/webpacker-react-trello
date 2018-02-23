@@ -160,7 +160,7 @@ class Lists extends React.Component {
       (
         <form onSubmit={this.addCard.bind(this, list.id)} >
           <input type="text" value={this.state.value} onChange={this.handleCardText} />
-          <input type="submit" value="Add Card" />
+          <input type="submit" value="Add Card" className='btn' />
         </form>
       ) : ( <button onClick={this.openForm.bind(this,list.id)} className='btn'>Add Card</button> )
 

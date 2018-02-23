@@ -77,7 +77,12 @@ body {
   color: dimGrey;
 }
 
-input {
+input[type=text]{
   display: inline-flex;
+  width: 98%;
   height: 2rem;
+}
+
+a.btn {
+  color: white; 
 }
