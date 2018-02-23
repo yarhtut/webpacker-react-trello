@@ -4,7 +4,6 @@ import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 
 import Card from './cards.jsx'
 
-
 // fake data generator
 const getItems = count =>
 Array.from({ length: count }, (v, k) => k).map(k => ({
@@ -28,9 +27,10 @@ const getItemStyle = (isDragging, draggableStyle) => ({
   userSelect: 'none',
   padding: grid * 2,
   margin: `0 0 ${grid}px 0`,
+  borderRadius: 3,
 
   // change background colour if dragging
-  background: isDragging ? 'lightgreen' : 'grey',
+  background: isDragging ? 'lightgreen' : 'whiteSmoke',
 
   // styles we need to apply on draggables
   ...draggableStyle,
@@ -40,6 +40,8 @@ const getListStyle = isDraggingOver => ({
   background: isDraggingOver ? 'lightblue' : 'lightgrey',
   padding: grid,
   width: 250,
+  margin: 2,
+  borderRadius: 3,
 });
 
 
@@ -50,7 +52,6 @@ class Lists extends React.Component {
       lists: [],
       cards: [],
       value: '',
-      items: getItems(10)
     }
 
     this.onDragEnd = this.onDragEnd.bind(this);
@@ -69,13 +70,12 @@ class Lists extends React.Component {
   }
 
   onDragEnd(result) {
-    // dropped outside the list
     if (!result.destination) {
       return;
     }
 
-    const items = reorder(
-      this.state.items,
+    const cards = reorder(
+      this.state.cards,
       result.source.index,
       result.destination.index
     );
@@ -93,6 +93,7 @@ class Lists extends React.Component {
     e.preventDefault();
     const token = document.querySelector(`meta[name='csrf-token']`).getAttribute('content');
     const data = {  list_id: listId, name:  this.state.value }
+    console.log(data)
 
     fetch(`/cards` , {
       body: JSON.stringify(data),
@@ -114,7 +115,6 @@ class Lists extends React.Component {
     this.setState({value: e.target.value});
   }
 
-
   moveCard(dragIndex, hoverIndex) {
     const { cards } = this.state
     const dragCard = cards[dragIndex]
@@ -127,67 +127,65 @@ class Lists extends React.Component {
       }),
     )
   }
+
   render() {
     const allLists = this.state.lists.map((list) => {
-      const allCards = this.state.cards.map((card,i) => {
+      const allCards = this.state.cards.map((card, index) => {
         if (card.list_id == list.id) {
-          return <Card id={card.id} name={card.name} index={card.position} moveCard={this.moveCard} />
+          return (
+
+          <Draggable key={card.id} draggableId={card.id} index={index}>
+            {(provided, snapshot) => (
+              <div>
+                <div
+                  ref={provided.innerRef}
+                  {...provided.draggableProps}
+                  {...provided.dragHandleProps}
+                  style={getItemStyle(
+                    snapshot.isDragging,
+                    provided.draggableProps.style
+                  )}
+                >
+                  {card.name}
+                </div>
+                {provided.placeholder}
+              </div>
+            )}
+          </Draggable>
+        )
         }
       })
 
       const form = (this.state.formKey == list.id) ?
       (
-        <form >
-          <input type="text" value={this.state.value} onChange={this.handleCardText} onKeyPress={this.addCard.bind(this, list.id)} />
-          <input type="submit" value="Add Card" />
+        <form onSubmit={this.addCard.bind(this, list.id)} >
+          <input type="text" value={this.state.value} onChange={this.handleCardText} />
+          <input type="submit" value="Add Card" className='btn' />
         </form>
-      ) : ( <button onClick={this.openForm.bind(this,list.id)}>Add Card</button> )
-
+      ) : ( <button onClick={this.openForm.bind(this,list.id)} className='btn'>Add Card</button> )
 
       return (
-        <div className='col-3 card list'>
-          <h4 >{ list.name }</h4>
-          { allCards }
-          { form }
-        </div>
+        <DragDropContext onDragEnd={this.onDragEnd} className='col-3 card list'>
+          <Droppable droppableId="droppable">
+            {(provided, snapshot) => (
+              <div
+                ref={provided.innerRef}
+                style={getListStyle(snapshot.isDraggingOver)}
+              >
+                <h4 >{ list.name }</h4>
+                { allCards }
+                { form }
+                {provided.placeholder}
+              </div>
+            )}
+          </Droppable>
+        </DragDropContext>
       )
     })
 
     return <div className='row'>
       { allLists }
       <a href='/lists/new' className='btn col-3 card'>Add List</a>
-      <DragDropContext onDragEnd={this.onDragEnd}>
-        <Droppable droppableId="droppable">
-          {(provided, snapshot) => (
-            <div
-              ref={provided.innerRef}
-              style={getListStyle(snapshot.isDraggingOver)}
-            >
-              {this.state.items.map((item, index) => (
-                <Draggable key={item.id} draggableId={item.id} index={index}>
-                  {(provided, snapshot) => (
-                    <div>
-                      <div
-                        ref={provided.innerRef}
-                        {...provided.draggableProps}
-                        {...provided.dragHandleProps}
-                        style={getItemStyle(
-                          snapshot.isDragging,
-                          provided.draggableProps.style
-                        )}
-                      >
-                        {item.content}
-                      </div>
-                      {provided.placeholder}
-                    </div>
-                  )}
-                </Draggable>
-              ))}
-              {provided.placeholder}
-            </div>
-          )}
-        </Droppable>
-      </DragDropContext>
     </div>
   }
 }
