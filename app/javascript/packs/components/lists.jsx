@@ -57,6 +57,7 @@ class Lists extends React.Component {
     this.onDragEnd = this.onDragEnd.bind(this);
     this.addCard = this.addCard.bind(this);
     this.handleCardText = this.handleCardText.bind(this);
+    this.moveCard = this.moveCard.bind(this)
   }
 
   componentDidMount() {
