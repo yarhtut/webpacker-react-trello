@@ -7,7 +7,7 @@
     "prop-types": "^15.6.0",
     "react": "^16.2.0",
     "react-dom": "^16.2.0",
-    "react-draggable": "^3.0.5"
+    "react-beautiful-dnd": "4.0.1"
   },
   "devDependencies": {
     "webpack-dev-server": "^2.11.1"
