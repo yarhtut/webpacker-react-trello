@@ -4,7 +4,6 @@ import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 
 import Card from './cards.jsx'
 
-
 // fake data generator
 const getItems = count =>
 Array.from({ length: count }, (v, k) => k).map(k => ({
@@ -70,19 +69,19 @@ class Lists extends React.Component {
 
   onDragEnd(result) {
     // dropped outside the list
-    if (!result.destination) {
-      return;
-    }
-
-    const items = reorder(
-      this.state.items,
-      result.source.index,
-      result.destination.index
-    );
-
-    this.setState({
-      cards,
-    });
+    //    if (!result.destination) {
+    //      return;
+    //    }
+    //
+    //    const items = reorder(
+    //      this.state.items,
+    //      result.source.index,
+    //      result.destination.index
+    //    );
+    //
+    //    this.setState({
+    //      cards,
+    //    });
   }
 
   openForm(listId, e) {
@@ -114,7 +113,6 @@ class Lists extends React.Component {
     this.setState({value: e.target.value});
   }
 
-
   moveCard(dragIndex, hoverIndex) {
     const { cards } = this.state
     const dragCard = cards[dragIndex]
@@ -127,11 +125,32 @@ class Lists extends React.Component {
       }),
     )
   }
+
   render() {
     const allLists = this.state.lists.map((list) => {
-      const allCards = this.state.cards.map((card,i) => {
+      const allCards = this.state.cards.map((card, index) => {
         if (card.list_id == list.id) {
-          return <Card id={card.id} name={card.name} index={card.position} moveCard={this.moveCard} />
+          return (
+
+          <Draggable key={card.id} draggableId={card.id} index={index}>
+            {(provided, snapshot) => (
+              <div>
+                <div
+                  ref={provided.innerRef}
+                  {...provided.draggableProps}
+                  {...provided.dragHandleProps}
+                  style={getItemStyle(
+                    snapshot.isDragging,
+                    provided.draggableProps.style
+                  )}
+                >
+                  {card.name}
+                </div>
+                {provided.placeholder}
+              </div>
+            )}
+          </Draggable>
+        )
         }
       })
 
@@ -145,49 +164,27 @@ class Lists extends React.Component {
 
 
       return (
-        <div className='col-3 card list'>
-          <h4 >{ list.name }</h4>
-          { allCards }
-          { form }
-        </div>
+        <DragDropContext onDragEnd={this.onDragEnd} className='col-3 card list'>
+          <Droppable droppableId="droppable">
+            {(provided, snapshot) => (
+              <div
+                ref={provided.innerRef}
+                style={getListStyle(snapshot.isDraggingOver)}
+              >
+                <h4 >{ list.name }</h4>
+                { allCards }
+                { form }
+                {provided.placeholder}
+              </div>
+            )}
+          </Droppable>
+        </DragDropContext>
       )
     })
 
     return <div className='row'>
       { allLists }
       <a href='/lists/new' className='btn col-3 card'>Add List</a>
-      <DragDropContext onDragEnd={this.onDragEnd}>
-        <Droppable droppableId="droppable">
-          {(provided, snapshot) => (
-            <div
-              ref={provided.innerRef}
-              style={getListStyle(snapshot.isDraggingOver)}
-            >
-              {this.state.items.map((item, index) => (
-                <Draggable key={item.id} draggableId={item.id} index={index}>
-                  {(provided, snapshot) => (
-                    <div>
-                      <div
-                        ref={provided.innerRef}
-                        {...provided.draggableProps}
-                        {...provided.dragHandleProps}
-                        style={getItemStyle(
-                          snapshot.isDragging,
-                          provided.draggableProps.style
-                        )}
-                      >
-                        {item.content}
-                      </div>
-                      {provided.placeholder}
-                    </div>
-                  )}
-                </Draggable>
-              ))}
-              {provided.placeholder}
-            </div>
-          )}
-        </Droppable>
-      </DragDropContext>
     </div>
   }
 }
