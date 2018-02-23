@@ -1,49 +1,7 @@
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
-
 import Card from './cards.jsx'
-
-// fake data generator
-const getItems = count =>
-Array.from({ length: count }, (v, k) => k).map(k => ({
-  id: `item-${k}`,
-  content: `item ${k}`,
-}));
-
-// a little function to help us with reordering the result
-const reorder = (list, startIndex, endIndex) => {
-  const result = Array.from(list);
-  const [removed] = result.splice(startIndex, 1);
-  result.splice(endIndex, 0, removed);
-
-  return result;
-};
-
-const grid = 8;
-
-const getItemStyle = (isDragging, draggableStyle) => ({
-  // some basic styles to make the items look a bit nicer
-  userSelect: 'none',
-  padding: grid * 2,
-  margin: `0 0 ${grid}px 0`,
-  borderRadius: 3,
-
-  // change background colour if dragging
-  background: isDragging ? 'lightgreen' : 'whiteSmoke',
-
-  // styles we need to apply on draggables
-  ...draggableStyle,
-});
-
-const getListStyle = isDraggingOver => ({
-  background: isDraggingOver ? 'lightblue' : 'lightgrey',
-  padding: grid,
-  width: 250,
-  margin: 2,
-  borderRadius: 3,
-});
-
 
 class Lists extends React.Component {
   constructor(props) {
@@ -64,9 +22,6 @@ class Lists extends React.Component {
     fetch('/lists.json')
     .then(res => res.json())
     .then(res => this.setState({ lists: res }))
-    fetch('/cards.json')
-    .then(res => res.json())
-    .then(res => this.setState({ cards: res }))
   }
 
   onDragEnd(result) {
@@ -93,7 +48,6 @@ class Lists extends React.Component {
     e.preventDefault();
     const token = document.querySelector(`meta[name='csrf-token']`).getAttribute('content');
     const data = {  list_id: listId, name:  this.state.value }
-    console.log(data)
 
     fetch(`/cards` , {
       body: JSON.stringify(data),
@@ -118,7 +72,8 @@ class Lists extends React.Component {
   moveCard(dragIndex, hoverIndex) {
     const { cards } = this.state
     const dragCard = cards[dragIndex]
-
+    debugger
+console.log(dragCard)
     this.setState(
       update(this.state, {
         cards: {
@@ -130,11 +85,10 @@ class Lists extends React.Component {
 
   render() {
     const allLists = this.state.lists.map((list) => {
-      const allCards = this.state.cards.map((card, index) => {
-        if (card.list_id == list.id) {
+      const allCards = list[1].map((card, index) => {
+        console.log(card)
           return (
-
-          <Draggable key={card.id} draggableId={card.id} index={index}>
+          <Draggable key={card.id} draggableId={card.id} index={card.position}>
             {(provided, snapshot) => (
               <div>
                 <div
@@ -153,16 +107,15 @@ class Lists extends React.Component {
             )}
           </Draggable>
         )
-        }
       })
 
-      const form = (this.state.formKey == list.id) ?
+      const form = (this.state.formKey == list[0].id) ?
       (
         <form onSubmit={this.addCard.bind(this, list.id)} >
           <input type="text" value={this.state.value} onChange={this.handleCardText} />
           <input type="submit" value="Add Card" className='btn' />
         </form>
-      ) : ( <button onClick={this.openForm.bind(this,list.id)} className='btn'>Add Card</button> )
+      ) : ( <button onClick={this.openForm.bind(this,list[0].id)} className='btn'>Add Card</button> )
 
       return (
         <DragDropContext onDragEnd={this.onDragEnd} className='col-3 card list'>
@@ -172,7 +125,7 @@ class Lists extends React.Component {
                 ref={provided.innerRef}
                 style={getListStyle(snapshot.isDraggingOver)}
               >
-                <h4 >{ list.name }</h4>
+                <h4 >{ list[0].name }</h4>
                 { allCards }
                 { form }
                 {provided.placeholder}
@@ -191,3 +144,34 @@ class Lists extends React.Component {
 }
 
 export default Lists
+
+// a little function to help us with reordering the result
+const reorder = (list, startIndex, endIndex) => {
+  const result = Array.from(list);
+  const [removed] = result.splice(startIndex, 1);
+  result.splice(endIndex, 0, removed);
+
+  return result;
+};
+
+const getItemStyle = (isDragging, draggableStyle) => ({
+  // some basic styles to make the items look a bit nicer
+  userSelect: 'none',
+  padding: 8 * 2,
+  margin: `0 0 8px 0`,
+  borderRadius: 3,
+
+  // change background colour if dragging
+  background: isDragging ? 'lightgreen' : 'whiteSmoke',
+
+  // styles we need to apply on draggables
+  ...draggableStyle,
+});
+
+const getListStyle = isDraggingOver => ({
+  background: isDraggingOver ? 'lightblue' : 'lightgrey',
+  padding: 8,
+  width: 250,
+  margin: 2,
+  borderRadius: 3,
+});

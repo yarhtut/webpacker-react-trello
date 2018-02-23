@@ -4,7 +4,9 @@ class ListsController < ApplicationController
   # GET /lists
   # GET /lists.json
   def index
-    @lists = List.sorted
+    #@list = List.sorted.collect { |x| [x, x.cards] }
+
+    render json:  List.sorted.collect { |x| [x, x.cards] }
   end
 
   # GET /lists/1
@@ -62,13 +64,13 @@ class ListsController < ApplicationController
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
-    def set_list
-      @list = List.find(params[:id])
-    end
+  # Use callbacks to share common setup or constraints between actions.
+  def set_list
+    @list = List.find(params[:id])
+  end
 
-    # Never trust parameters from the scary internet, only allow the white list through.
-    def list_params
-      params.require(:list).permit(:name, :position)
-    end
+  # Never trust parameters from the scary internet, only allow the white list through.
+  def list_params
+    params.require(:list).permit(:name, :position)
+  end
 end
