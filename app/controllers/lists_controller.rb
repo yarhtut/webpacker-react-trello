@@ -4,9 +4,9 @@ class ListsController < ApplicationController
   # GET /lists
   # GET /lists.json
   def index
-    #@list = List.sorted.collect { |x| [x, x.cards] }
-
-    render json:  List.sorted.collect { |x| [x, x.cards] }
+    lists = List.sorted.collect { |x| [x.name, x.cards] }.to_h
+    #lists = Hash[list.each_slice(2).to_a]
+    render json:  lists
   end
 
   # GET /lists/1

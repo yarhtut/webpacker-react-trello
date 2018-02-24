@@ -3,19 +3,24 @@ import ReactDOM from 'react-dom';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import Card from './cards.jsx'
 
+const reorder = (list, startIndex, endIndex) => {
+  const result = Array.from(list);
+  const [removed] = result[0][1].splice(startIndex, 1);
+  //result.splice(endIndex, 0, removed);
+
+  return result;
+};
 class Lists extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
       lists: [],
-      cards: [],
-      value: '',
+      cards: []
     }
 
     this.onDragEnd = this.onDragEnd.bind(this);
     this.addCard = this.addCard.bind(this);
     this.handleCardText = this.handleCardText.bind(this);
-    this.moveCard = this.moveCard.bind(this)
   }
 
   componentDidMount() {
@@ -29,16 +34,17 @@ class Lists extends React.Component {
       return;
     }
 
-    const cards = reorder(
-      this.state.cards,
+    const lists = reorder(
+      this.state.lists,
       result.source.index,
       result.destination.index
     );
 
     this.setState({
-      cards,
+      lists,
     });
   }
+
 
   openForm(listId, e) {
     this.setState({formKey: listId, value: ''});
@@ -69,26 +75,11 @@ class Lists extends React.Component {
     this.setState({value: e.target.value});
   }
 
-  moveCard(dragIndex, hoverIndex) {
-    const { cards } = this.state
-    const dragCard = cards[dragIndex]
-    debugger
-console.log(dragCard)
-    this.setState(
-      update(this.state, {
-        cards: {
-          $splice: [[dragIndex, 1], [hoverIndex, 0, dragCard]],
-        },
-      }),
-    )
-  }
-
   render() {
     const allLists = this.state.lists.map((list) => {
       const allCards = list[1].map((card, index) => {
-        console.log(card)
-          return (
-          <Draggable key={card.id} draggableId={card.id} index={card.position}>
+        return (
+          <Draggable key={card.id} draggableId={card.position} index={card.position}>
             {(provided, snapshot) => (
               <div>
                 <div
@@ -118,41 +109,35 @@ console.log(dragCard)
       ) : ( <button onClick={this.openForm.bind(this,list[0].id)} className='btn'>Add Card</button> )
 
       return (
-        <DragDropContext onDragEnd={this.onDragEnd} className='col-3 card list'>
-          <Droppable droppableId="droppable">
-            {(provided, snapshot) => (
-              <div
-                ref={provided.innerRef}
-                style={getListStyle(snapshot.isDraggingOver)}
-              >
-                <h4 >{ list[0].name }</h4>
-                { allCards }
-                { form }
-                {provided.placeholder}
-              </div>
-            )}
-          </Droppable>
-        </DragDropContext>
+        <Droppable droppableId="droppable" className='col-3 card list'>
+          {(provided, snapshot) => (
+            <div
+              ref={provided.innerRef}
+              style={getListStyle(snapshot.isDraggingOver)}
+            >
+              <h4 >{ list[0].name }</h4>
+              { allCards }
+              { form }
+              {provided.placeholder}
+            </div>
+          )}
+        </Droppable>
       )
     })
 
-    return <div className='row'>
-      { allLists }
-      <a href='/lists/new' className='btn col-3 card'>Add List</a>
-    </div>
+    return(
+      <div className='row'>
+        <DragDropContext onDragEnd={this.onDragEnd} className=' '>
+          { allLists }
+          <a href='/lists/new' className='btn col-3 card'>Add List</a>
+        </DragDropContext>
+      </div>
+    )
   }
 }
 
 export default Lists
 
-// a little function to help us with reordering the result
-const reorder = (list, startIndex, endIndex) => {
-  const result = Array.from(list);
-  const [removed] = result.splice(startIndex, 1);
-  result.splice(endIndex, 0, removed);
-
-  return result;
-};
 
 const getItemStyle = (isDragging, draggableStyle) => ({
   // some basic styles to make the items look a bit nicer

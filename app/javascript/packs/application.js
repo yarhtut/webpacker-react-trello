@@ -7,16 +7,17 @@
 // To reference this file, add <%= javascript_pack_tag 'application' %> to the appropriate
 // layout file, like app/views/layouts/application.html.erb
 
-
 import React from 'react'
 import ReactDOM from 'react-dom'
 import Lists from './components/lists.jsx'
+import Board from './board/board'
+import { authorQuoteMap } from './board/data';
 
-
+console.log(authorQuoteMap)
 
 document.addEventListener('DOMContentLoaded', () => {
   ReactDOM.render(
-    <Lists name="Yar" />,
+    <Board initial={authorQuoteMap} />,
     document.body.appendChild(document.getElementById('board')),
   )
 })
