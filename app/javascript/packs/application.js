@@ -11,14 +11,34 @@ import React from 'react'
 import ReactDOM from 'react-dom'
 import Lists from './components/lists.jsx'
 import Board from './board/board'
-import { authorQuoteMap } from './board/data';
-
-console.log(authorQuoteMap)
+import { authorQuoteMap,data } from './board/data';
 
 document.addEventListener('DOMContentLoaded', () => {
+
   ReactDOM.render(
-    <Board initial={authorQuoteMap} />,
+    <App />,
     document.body.appendChild(document.getElementById('board')),
   )
 })
+
+
+class App extends React.Component {
+  constructor(props) {
+    super(props)
+    this.state = {
+      lists: [],
+    }
+  }
+  componentDidMount() {
+    fetch('/lists.json')
+    .then(res => res.json())
+    .then(res => this.setState({ lists: res }))
+  }
+  render() {
+    return (
+      <Board initial={authorQuoteMap} lists={this.state.lists}/>
+      )
+  }
+}
+
 

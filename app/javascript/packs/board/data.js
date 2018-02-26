@@ -99,26 +99,28 @@ export const quotes = [
 let idCount = 0;
 
 export const getAuthors = (count) =>
-  Array.from({ length: count }, (v, k) => k).map(() => {
-    const random = authors[Math.floor(Math.random() * authors.length)];
+Array.from({ length: count }, (v, k) => k).map(() => {
+  const random = authors[Math.floor(Math.random() * authors.length)];
 
-    const custom = {
-      id: `author-${idCount++}`,
-      name: random.name,
-      avatarUrl: random.avatarUrl,
-      url: random.url,
-    };
+  const custom = {
+    id: `author-${idCount++}`,
+    name: random.name,
+    avatarUrl: random.avatarUrl,
+    url: random.url,
+  };
 
-    return custom;
-  });
+  return custom;
+});
 
 const getByAuthor = (author, items) =>
-  items.filter((quote) => quote.author === author);
+items.filter((quote) => quote.author === author);
 
 export const authorQuoteMap =
   authors.reduce((previous, author) => ({
-    ...previous,
-    [author.name]: getByAuthor(author, quotes),
+  ...previous,
+  [author.name]: getByAuthor(author, quotes),
 }), {});
+
+
 
 

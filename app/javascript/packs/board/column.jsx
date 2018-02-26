@@ -35,7 +35,9 @@ export default class Column extends Component {
   render() {
     const title: string = this.props.title;
     const quotes: Quote[] = this.props.quotes;
+    const lists: Quote[] = this.props.lists;
     const index: number = this.props.index;
+
     return (
       <Draggable draggableId={title} index={index}>
         {(provided: DraggableProvided, snapshot: DraggableStateSnapshot) => (
