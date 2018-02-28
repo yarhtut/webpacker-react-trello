@@ -95,64 +95,53 @@ class Lists extends React.Component {
     this.setState({value: e.target.value});
   }
 
+
   render() {
-    const allLists = this.state.lists.map((list) => {
-      const allCards = list[1].map((card, index) => {
-        return (
-          <Draggable key={card.id} draggableId={card.position} index={card.position}>
-            {(provided, snapshot) => (
-              <div>
-                <div
-                  ref={provided.innerRef}
-                  {...provided.draggableProps}
-                  {...provided.dragHandleProps}
-                  style={getItemStyle(
-                    snapshot.isDragging,
-                    provided.draggableProps.style
-                  )}
-                >
-                  {card.name}
-                </div>
-                {provided.placeholder}
-              </div>
-            )}
-          </Draggable>
-        )
-      })
-
-      const form = (this.state.formKey == list[0].id) ?
-      (
-        <form onSubmit={this.addCard.bind(this, list.id)} >
-          <input type="text" value={this.state.value} onChange={this.handleCardText} />
-          <input type="submit" value="Add Card" className='btn' />
-        </form>
-      ) : ( <button onClick={this.openForm.bind(this,list[0].id)} className='btn'>Add Card</button> )
-
-      return (
-        <Droppable droppableId="droppable" className='col-3 card list'>
-          {(provided, snapshot) => (
-            <div
-              ref={provided.innerRef}
-              style={getListStyle(snapshot.isDraggingOver)}
-            >
-              <h4 >{ list[0].name }</h4>
-              { allCards }
-              { form }
-              {provided.placeholder}
-            </div>
-          )}
-        </Droppable>
-      )
-    })
-
+    const columns: QuoteMap = this.state.columns;
+    const lists = this.state.lists;
+    const ordered: string[] = this.state.ordered;
+    const { containerHeight } = this.props;
+  
+    console.log('columns[key]')
+    console.log(lists)
+    debugger
+    console.log(ordered.map((key, index) => columns[key] ))
+    console.log('columns[key]')
+    const board = (
+      <Droppable
+        droppableId="board"
+        type="COLUMN"
+        direction="horizontal"
+        ignoreContainerClipping={Boolean(containerHeight)}
+      >
+        {(provided: DroppableProvided) => (
+          <Container innerRef={provided.innerRef} {...provided.droppableProps}>
+            {ordered.map((key, index) => (
+              <Column
+                key={key}
+                index={index}
+                title={key}
+                quotes={columns[key]}
+                lists={lists}
+                autoFocusQuoteId={this.state.autoFocusQuoteId}
+              />
+            ))}
+          </Container>
+        )}
+      </Droppable>
+    );
     return(
-      <div className='row'>
-        <DragDropContext onDragEnd={this.onDragEnd} className=' '>
-          { allLists }
-          <a href='/lists/new' className='btn col-3 card'>Add List</a>
-        </DragDropContext>
-      </div>
-    )
+      <DragDropContext
+        onDragStart={this.onDragStart}
+        onDragEnd={this.onDragEnd}
+      >
+        {this.props.containerHeight ? (
+          <ParentContainer height={containerHeight}>{board}</ParentContainer>
+        ) : (
+        board
+      )}
+    </DragDropContext>
+    );
   }
 }
 

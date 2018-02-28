@@ -25,7 +25,7 @@ class App extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
-      lists: {} 
+      lists: {}
     }
   }
   componentDidMount() {
@@ -35,7 +35,7 @@ class App extends React.Component {
   }
   render() {
     return (
-      <Board initial={this.state.lists} lists={this.state.lists}/>
+      <Board initial={authorQuoteMap} lists={this.state.lists} listsOrder={Object.keys(this.state.lists)}/>
       )
   }
 }

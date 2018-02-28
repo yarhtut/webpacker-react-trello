@@ -105,18 +105,18 @@ export default class QuoteItem extends React.PureComponent<Props> {
 
     return (
       <Container
-        href={quote.author.url}
+        href={quote.name}
         isDragging={isDragging}
         innerRef={provided.innerRef}
         {...provided.draggableProps}
         {...provided.dragHandleProps}
       >
-        <Avatar src={quote.author.avatarUrl} alt={quote.author.name} />
+        <Avatar src={quote.name} alt={quote.name} />
         <Content>
-          <BlockQuote>{quote.content}</BlockQuote>
+          <BlockQuote>{quote.name}</BlockQuote>
           <Footer>
             <QuoteId>(id: {quote.id})</QuoteId>
-            <Attribution>{quote.author.name}</Attribution>
+            <Attribution>{quote.name}</Attribution>
           </Footer>
         </Content>
       </Container>

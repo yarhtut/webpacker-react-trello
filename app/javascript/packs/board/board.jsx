@@ -5,31 +5,16 @@ import Column from './column';
 import reorder, { reorderQuoteMap } from './reorder';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 
-const ParentContainer = styled.div`
-height: ${({ height }) => height};
-overflow-x: hidden;
-overflow-y: auto;
-`;
-
-const Container = styled.div`
-min-height: 100vh;
-min-width: 100vw;
-display: inline-flex;
-`;
-
 export default class Board extends Component {
-
   constructor(props) {
     super(props)
     this.state = {
       columns: this.props.initial,
       ordered: Object.keys(this.props.initial), 
-      lists: {},
+      lists: this.props.lists,
+      listsOrder: Object.keys(this.props.lists), 
       autoFocusQuoteId: null,
     }
-    console.log('this.state')
-    console.log(this.state)
-    console.log(this.props)
   }
 
  boardRef: ?HTMLElement
@@ -85,14 +70,15 @@ export default class Board extends Component {
 
   render() {
     const columns: QuoteMap = this.state.columns;
-    const lists = this.state.lists;
     const ordered: string[] = this.state.ordered;
+    const lists = this.state.lists;
+    const listsOrder = (Object.keys(lists));
     const { containerHeight } = this.props;
   
     console.log('columns[key]')
-    console.log(lists)
-    debugger
-    console.log(ordered.map((key, index) => columns[key] ))
+    console.log(Object.keys(lists))
+    console.log(listsOrder.map((key, index) => lists[key] ))
+    // console.log(ordered.map((key, index) => columns[key] ))
     console.log('columns[key]')
     const board = (
       <Droppable
@@ -103,12 +89,12 @@ export default class Board extends Component {
       >
         {(provided: DroppableProvided) => (
           <Container innerRef={provided.innerRef} {...provided.droppableProps}>
-            {ordered.map((key, index) => (
+            {listsOrder.map((key, index) => (
               <Column
                 key={key}
                 index={index}
                 title={key}
-                quotes={columns[key]}
+                quotes={lists[key]}
                 lists={lists}
                 autoFocusQuoteId={this.state.autoFocusQuoteId}
               />
@@ -132,3 +118,16 @@ export default class Board extends Component {
   );
   }
 }
+
+const ParentContainer = styled.div`
+height: ${({ height }) => height};
+overflow-x: hidden;
+overflow-y: auto;
+`;
+
+const Container = styled.div`
+min-height: 100vh;
+min-width: 100vw;
+display: inline-flex;
+`;
+
