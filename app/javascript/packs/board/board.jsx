@@ -12,7 +12,6 @@ export default class Board extends Component {
       columns: this.props.initial,
       ordered: Object.keys(this.props.initial), 
       lists: this.props.lists,
-      listsOrder: Object.keys(this.props.lists), 
       autoFocusQuoteId: null,
     }
   }
@@ -40,7 +39,8 @@ export default class Board extends Component {
 
     const source: DraggableLocation = result.source;
     const destination: DraggableLocation = result.destination;
-
+    console.log(source)
+    console.log(destination)
     // reordering column
     if (result.type === 'COLUMN') {
       const ordered: string[] = reorder(
@@ -69,17 +69,12 @@ export default class Board extends Component {
   }
 
   render() {
-    const columns: QuoteMap = this.state.columns;
-    const ordered: string[] = this.state.ordered;
+    const columns = this.state.columns;
+    const ordered = this.state.ordered;
     const lists = this.state.lists;
-    const listsOrder = (Object.keys(lists));
+    const order = (Object.keys(lists));
     const { containerHeight } = this.props;
   
-    console.log('columns[key]')
-    console.log(Object.keys(lists))
-    console.log(listsOrder.map((key, index) => lists[key] ))
-    // console.log(ordered.map((key, index) => columns[key] ))
-    console.log('columns[key]')
     const board = (
       <Droppable
         droppableId="board"
@@ -89,7 +84,7 @@ export default class Board extends Component {
       >
         {(provided: DroppableProvided) => (
           <Container innerRef={provided.innerRef} {...provided.droppableProps}>
-            {listsOrder.map((key, index) => (
+            {order.map((key, index) => (
               <Column
                 key={key}
                 index={index}

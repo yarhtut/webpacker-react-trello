@@ -35,7 +35,7 @@ class App extends React.Component {
   }
   render() {
     return (
-      <Board initial={authorQuoteMap} lists={this.state.lists} listsOrder={Object.keys(this.state.lists)}/>
+      <Board initial={authorQuoteMap} lists={this.state.lists}/>
       )
   }
 }

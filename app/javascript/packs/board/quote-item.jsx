@@ -102,7 +102,6 @@ export default class QuoteItem extends React.PureComponent<Props> {
 
   render() {
     const { quote, isDragging, provided } = this.props;
-
     return (
       <Container
         href={quote.name}
