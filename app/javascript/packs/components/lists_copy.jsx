@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
-import styled, { injectGlobal } from 'styled-components';
-import reorder, { reorderQuoteMap } from '../board/reorder';
+//import styled, { injectGlobal } from 'styled-components';
+//import reorder, { reorderQuoteMap } from '../board/reorder';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import Card from './cards'
 
@@ -13,9 +13,9 @@ class Lists extends React.Component {
       cards: []
     }
 
-    // this.onDragEnd = this.onDragEnd.bind(this);
-    // this.addCard = this.addCard.bind(this);
-    // this.handleCardText = this.handleCardText.bind(this);
+    this.onDragEnd = this.onDragEnd.bind(this);
+    this.addCard = this.addCard.bind(this);
+    this.handleCardText = this.handleCardText.bind(this);
   }
 
   componentDidMount() {
@@ -24,48 +24,21 @@ class Lists extends React.Component {
     .then(res => this.setState({ lists: res }))
   }
 
-  onDragStart = (initial) => {
-    this.setState({
-      autoFocusQuoteId: null,
-    });
-  }
-
-  onDragEnd = (result: DropResult) => {
-    // dropped nowhere
+  onDragEnd(result) {
     if (!result.destination) {
       return;
     }
 
-    const source: DraggableLocation = result.source;
-    const destination: DraggableLocation = result.destination;
-
-    // reordering column
-    if (result.type === 'COLUMN') {
-      const ordered: string[] = reorder(
-        this.state.ordered,
-        source.index,
-        destination.index
-      );
-
-      this.setState({
-        ordered,
-      });
-
-      return;
-    }
-
-    const data = reorderQuoteMap({
-      quoteMap: this.state.columns,
-      source,
-      destination,
-    });
+    const lists = reorder(
+      this.state.lists,
+      result.source.index,
+      result.destination.index
+    );
 
     this.setState({
-      columns: data.quoteMap,
-      autoFocusQuoteId: data.autoFocusQuoteId,
+      lists,
     });
   }
-
   openForm(listId, e) {
     this.setState({formKey: listId, value: ''});
   }
@@ -182,14 +155,3 @@ const getListStyle = isDraggingOver => ({
 });
 
 
-const ParentContainer = styled.div`
-height: ${({ height }) => height};
-overflow-x: hidden;
-overflow-y: auto;
-`;
-
-const Container = styled.div`
-min-height: 100vh;
-min-width: 100vw;
-display: inline-flex;
-`;

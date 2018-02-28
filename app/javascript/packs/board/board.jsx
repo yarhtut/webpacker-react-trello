@@ -5,7 +5,6 @@ import Column from './column';
 import reorder, { reorderQuoteMap } from './reorder';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 
-
 const ParentContainer = styled.div`
 height: ${({ height }) => height};
 overflow-x: hidden;
@@ -25,14 +24,20 @@ export default class Board extends Component {
     this.state = {
       columns: this.props.initial,
       ordered: Object.keys(this.props.initial), 
-      lists: this.props.lists,
+      lists: {},
       autoFocusQuoteId: null,
     }
+    console.log('this.state')
+    console.log(this.state)
+    console.log(this.props)
   }
 
  boardRef: ?HTMLElement
 
-  componentDidMount() {
+ componentDidMount() {
+    fetch('/lists.json')
+    .then(res => res.json())
+    .then(res => this.setState({ lists: res }))
     injectGlobal` body { background: rgb(0, 121, 191); } `;
   }
 
@@ -85,7 +90,8 @@ export default class Board extends Component {
     const { containerHeight } = this.props;
   
     console.log('columns[key]')
-    console.log(ordered)
+    console.log(lists)
+    debugger
     console.log(ordered.map((key, index) => columns[key] ))
     console.log('columns[key]')
     const board = (

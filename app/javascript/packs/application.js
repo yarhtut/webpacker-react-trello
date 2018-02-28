@@ -14,7 +14,6 @@ import Board from './board/board'
 import { authorQuoteMap,data } from './board/data';
 
 document.addEventListener('DOMContentLoaded', () => {
-
   ReactDOM.render(
     <App />,
     document.body.appendChild(document.getElementById('board')),
@@ -26,7 +25,7 @@ class App extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
-      lists: [],
+      lists: {} 
     }
   }
   componentDidMount() {
@@ -36,7 +35,7 @@ class App extends React.Component {
   }
   render() {
     return (
-      <Board initial={authorQuoteMap} lists={this.state.lists}/>
+      <Board initial={this.state.lists} lists={this.state.lists}/>
       )
   }
 }
