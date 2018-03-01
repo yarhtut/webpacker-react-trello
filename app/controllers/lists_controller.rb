@@ -5,7 +5,7 @@ class ListsController < ApplicationController
   # GET /lists.json
   def index
     #lists = Hash[list.each_slice(2).to_a]
-    render json:  List.sorted.collect { |x| [x.name, x.cards] }.to_h
+    render json:  List.sorted.collect { |x| [x.name,  x.cards.each(&:name)] }.to_h, each_serializer: ListsSerializer
   end
 
   # GET /lists/1
