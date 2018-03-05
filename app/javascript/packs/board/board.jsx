@@ -10,14 +10,14 @@ export default class Board extends Component {
     super(props)
     this.state = {
       columns: this.props.initial,
-      ordered: Object.keys(this.props.initial), 
+      ordered: Object.keys(this.props.initial),
       lists: this.props.lists,
-      order: Object.keys(this.props.lists), 
+      order: Object.keys(this.props.lists),
       autoFocusQuoteId: null,
     }
   }
 
- boardRef: ?HTMLElement
+  boardRef: ?HTMLElement
 
   componentWillMount() {
     fetch('/lists.json')
@@ -74,7 +74,7 @@ export default class Board extends Component {
     const lists = this.state.lists;
     const order = this.state.order;
     const { containerHeight } = this.props;
-    console.log(this.state.order.map((key, index) => index))
+    //console.log(this.state.order.map((key, index) => index))
 
     const board = (
       <Droppable

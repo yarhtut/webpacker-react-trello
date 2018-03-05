@@ -1,5 +1,6 @@
 class ListsController < ApplicationController
-  before_action :set_list, only: [:show, :edit, :update, :destroy]
+  before_action :set_list, only: [:show, :edit, :destroy]
+  before_action :set_list_by_position, only: [:update]
 
   # GET /lists
   # GET /lists.json
@@ -42,15 +43,7 @@ class ListsController < ApplicationController
   # PATCH/PUT /lists/1
   # PATCH/PUT /lists/1.json
   def update
-    respond_to do |format|
-      if @list.update(list_params)
-        format.html { redirect_to @list, notice: 'List was successfully updated.' }
-        format.json { render :show, status: :ok, location: @list }
-      else
-        format.html { render :edit }
-        format.json { render json: @list.errors, status: :unprocessable_entity }
-      end
-    end
+      @list_position.update_attributes(position: list_params['position'])
   end
 
   # DELETE /lists/1
@@ -67,6 +60,10 @@ class ListsController < ApplicationController
   # Use callbacks to share common setup or constraints between actions.
   def set_list
     @list = List.find(params[:id])
+  end
+
+  def set_list_by_position
+    @list_position = List.find_by_position(params[:id])
   end
 
   # Never trust parameters from the scary internet, only allow the white list through.
