@@ -74,8 +74,8 @@ export default class Board extends Component {
     const lists = this.state.lists;
     const order = this.state.order;
     const { containerHeight } = this.props;
-    console.log(this.state.order)
-  
+    console.log(this.state.order.map((key, index) => index))
+
     const board = (
       <Droppable
         droppableId="board"
