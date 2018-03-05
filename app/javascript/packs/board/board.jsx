@@ -12,16 +12,18 @@ export default class Board extends Component {
       columns: this.props.initial,
       ordered: Object.keys(this.props.initial), 
       lists: this.props.lists,
+      order: Object.keys(this.props.lists), 
       autoFocusQuoteId: null,
     }
   }
 
  boardRef: ?HTMLElement
 
- componentDidMount() {
+  componentWillMount() {
     fetch('/lists.json')
     .then(res => res.json())
-    .then(res => this.setState({ lists: res }))
+    .then(res => this.setState({ lists: res , order: Object.keys(res) }))
+
     injectGlobal` body { background: rgb(0, 121, 191); } `;
   }
 
@@ -31,39 +33,37 @@ export default class Board extends Component {
     });
   }
 
-  onDragEnd = (result: DropResult) => {
+  onDragEnd = (result) => {
     // dropped nowhere
     if (!result.destination) {
       return;
     }
 
-    const source: DraggableLocation = result.source;
-    const destination: DraggableLocation = result.destination;
-    console.log(source)
-    console.log(destination)
+    const source = result.source;
+    const destination = result.destination;
     // reordering column
     if (result.type === 'COLUMN') {
-      const ordered: string[] = reorder(
-        this.state.ordered,
+      const order = reorder(
+        this.state.order,
         source.index,
         destination.index
       );
 
       this.setState({
-        ordered,
+        order,
       });
 
       return;
     }
 
     const data = reorderQuoteMap({
-      quoteMap: this.state.columns,
+      quoteMap: this.state.lists,
       source,
       destination,
     });
 
     this.setState({
-      columns: data.quoteMap,
+      lists: data.quoteMap,
       autoFocusQuoteId: data.autoFocusQuoteId,
     });
   }
@@ -72,8 +72,9 @@ export default class Board extends Component {
     const columns = this.state.columns;
     const ordered = this.state.ordered;
     const lists = this.state.lists;
-    const order = (Object.keys(lists));
+    const order = this.state.order;
     const { containerHeight } = this.props;
+    console.log(this.state.order)
   
     const board = (
       <Droppable

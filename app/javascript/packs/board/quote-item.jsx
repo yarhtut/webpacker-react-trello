@@ -89,7 +89,7 @@ flex-grow: 1;
 // Need to be super sure we are not relying on PureComponent here for
 // things we should be doing in the selector as we do not know if consumers
 // will be using PureComponent
-export default class QuoteItem extends React.PureComponent<Props> {
+export default class QuoteItem extends React.PureComponent {
   componentDidMount() {
     if (!this.props.autoFocus) {
       return;

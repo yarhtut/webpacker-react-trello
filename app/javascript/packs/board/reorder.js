@@ -1,7 +1,4 @@
 // @flow
-import type { Quote, QuoteMap } from './types';
-import type { DraggableLocation } from '../../src/types';
-
 // a little function to help us with reordering the result
 const reorder = (
   list: any[],
@@ -16,34 +13,24 @@ const reorder = (
 
 export default reorder;
 
-type ReorderQuoteMapArgs = {|
-  quoteMap: QuoteMap,
-  source: DraggableLocation,
-  destination: DraggableLocation,
-|}
-
-export type ReorderQuoteMapResult = {|
-  quoteMap: QuoteMap,
-  autoFocusQuoteId: ?string,
-|}
 
 export const reorderQuoteMap = ({
   quoteMap,
   source,
   destination,
-}: ReorderQuoteMapArgs): ReorderQuoteMapResult => {
+}) => {
   const current: Quote[] = [...quoteMap[source.droppableId]];
   const next: Quote[] = [...quoteMap[destination.droppableId]];
   const target: Quote = current[source.index];
 
   // moving to same list
   if (source.droppableId === destination.droppableId) {
-    const reordered: Quote[] = reorder(
+    const reordered = reorder(
       current,
       source.index,
       destination.index,
     );
-    const result: QuoteMap = {
+    const result = {
       ...quoteMap,
       [source.droppableId]: reordered,
     };
