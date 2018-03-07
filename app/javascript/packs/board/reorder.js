@@ -89,9 +89,7 @@ const reorder = (
       const sourceCard = current.filter((x) =>  x.position == (source.index + 1));
       const cardId = sourceCard[0].id;
       const data = { source: source, destination: destination, listId: listId, cardId: cardId }
-      debugger
-
-      fetch(`/card/${cardId}` , {
+      fetch(`/cards/${cardId}` , {
         body: JSON.stringify(data),
         method: 'DELETE',
         headers: {

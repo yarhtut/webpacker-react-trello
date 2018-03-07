@@ -41,18 +41,23 @@ class CardsController < ApplicationController
   # PATCH/PUT /cards/1
   # PATCH/PUT /cards/1.json
   def update
-    binding.pry
     @card_position.update_attributes(position: card_params['position'])
   end
 
   # DELETE /cards/1
   # DELETE /cards/1.json
   def destroy
+    new_name = @card.name
+    new_position = params[:destination][:index] + 1
+    new_list_id = List.find_by(name: params[:destination][:droppableId]).id
     @card.destroy
-    respond_to do |format|
-      format.html { redirect_to cards_url, notice: 'Card was successfully destroyed.' }
-      format.json { head :no_content }
-    end
+    @new_card = Card.new(list_id: new_list_id, name: new_name,  position: new_position)
+    @new_card.save
+    # @card.destroy
+    # respond_to do |format|
+    #   format.html { redirect_to cards_url, notice: 'Card was successfully destroyed.' }
+    #   format.json { head :no_content }
+    # end
   end
 
   private
@@ -63,6 +68,9 @@ class CardsController < ApplicationController
 
   def set_card_by_position
     @card_position = Card.find_by_position(params[:id])
+  end
+
+  def find_list_id
   end
   # Never trust parameters from the scary internet, only allow the white list through.
   def card_params
