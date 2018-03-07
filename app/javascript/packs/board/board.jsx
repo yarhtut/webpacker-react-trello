@@ -1,4 +1,3 @@
-// @flow
 import React, { Component } from 'react';
 import styled, { injectGlobal } from 'styled-components';
 import Column from './column';

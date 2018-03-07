@@ -41,6 +41,7 @@ class CardsController < ApplicationController
   # PATCH/PUT /cards/1
   # PATCH/PUT /cards/1.json
   def update
+    binding.pry
     @card_position.update_attributes(position: card_params['position'])
   end
 
