@@ -30,7 +30,18 @@ const ScrollContainer = styled.div`
 const Container = styled.div``;
 
 class InnerQuoteList extends Component {
-  shouldComponentUpdate(nextProps: QuoteListProps) {
+
+  constructor(props) {
+    super(props)
+    this.state = {
+      value: '',
+    }
+
+    this.addCard = this.addCard.bind(this);
+    this.handleCardText = this.handleCardText.bind(this);
+  }
+
+  shouldComponentUpdate(nextProps) {
     if (nextProps.quotes !== this.props.quotes) {
       return true;
     }
@@ -38,9 +49,45 @@ class InnerQuoteList extends Component {
     return false;
   }
 
+  openForm(listId, e) {
+    //this.setState({formKey: listId, value: ''});
+  }
+
+  handleCardText(e) {
+    this.setState({value: e.target.value});
+  }
+
+  addCard(listId, e) {
+    e.preventDefault();
+    const token = document.querySelector(`meta[name='csrf-token']`).getAttribute('content');
+    const data = {  list_id: listId, name: this.state.value }
+    console.log(data)
+
+    //fetch(`/cards` , {
+    //  body: JSON.stringify(data),
+    //  method: 'POST',
+    //  headers: {
+    //    'Content-type': 'application/json',
+    //    'X-CSRF-TOKEN': token
+    //  },
+    //  credentials: 'same-origin'
+    //})
+    //.then(() => {
+    //  fetch('/cards.json')
+    //  .then(res => res.json())
+    //  .then(res => this.setState({ cards: res }))
+    //})
+  }
+
   render() {
-    //console.log(this.props.quotes.map((q,i)=> q.id))
-    //console.log(this.props.quotes.map((q,i)=> i))
+    const form = 
+    (
+      <form onSubmit={this.addCard.bind(this, 1)} >
+        <input type="text" value={this.state.value} onChange={this.handleCardText} />
+        <input type="submit" value="Add Card" className='btn' />
+      </form>
+    )
+    //console.log(this.props.quotes.map((quote, index) => console.log(quote)));
     return (
       <div>
         {this.props.quotes.map((quote, index) => (
@@ -56,14 +103,14 @@ class InnerQuoteList extends Component {
                 />
                 {dragProvided.placeholder}
               </div>
-          )}
+            )}
           </Draggable>
         ))}
+        { form } 
       </div>
     );
   }
 }
-
 
 class InnerList extends Component {
   render() {

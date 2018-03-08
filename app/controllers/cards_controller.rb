@@ -70,8 +70,6 @@ class CardsController < ApplicationController
     @card_position = Card.find_by_position(params[:id])
   end
 
-  def find_list_id
-  end
   # Never trust parameters from the scary internet, only allow the white list through.
   def card_params
     params.require(:card).permit(:list_id, :name, :position)

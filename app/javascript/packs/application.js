@@ -20,7 +20,6 @@ document.addEventListener('DOMContentLoaded', () => {
   )
 })
 
-
 class App extends React.Component {
   constructor(props) {
     super(props)
@@ -28,15 +27,17 @@ class App extends React.Component {
       lists: {}
     }
   }
+
   componentDidMount() {
     fetch('/lists.json')
     .then(res => res.json())
     .then(res => this.setState({ lists: res }))
   }
+
   render() {
     return (
       <Board initial={authorQuoteMap} lists={this.state.lists} />
-      )
+    )
   }
 }
 

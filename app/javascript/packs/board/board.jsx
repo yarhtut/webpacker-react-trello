@@ -12,8 +12,12 @@ export default class Board extends Component {
       ordered: Object.keys(this.props.initial),
       lists: this.props.lists,
       order: Object.keys(this.props.lists),
+      value: '',
       autoFocusQuoteId: null,
     }
+
+    this.addCard = this.addCard.bind(this);
+    this.handleCardText = this.handleCardText.bind(this);
   }
 
   boardRef: ?HTMLElement
@@ -67,14 +71,48 @@ export default class Board extends Component {
     });
   }
 
+  openForm(listId, e) {
+    this.setState({formKey: listId, value: ''});
+  }
+
+  handleCardText(e) {
+    this.setState({value: e.target.value});
+  }
+  addCard(listId, e) {
+    e.preventDefault();
+    const token = document.querySelector(`meta[name='csrf-token']`).getAttribute('content');
+    const data = {  list_id: listId, name:  this.state.value }
+
+    fetch(`/cards` , {
+      body: JSON.stringify(data),
+      method: 'POST',
+      headers: {
+        'Content-type': 'application/json',
+        'X-CSRF-TOKEN': token
+      },
+      credentials: 'same-origin'
+    })
+    .then(() => {
+      fetch('/cards.json')
+      .then(res => res.json())
+      .then(res => this.setState({ cards: res }))
+    })
+  }
+
   render() {
     const columns = this.state.columns;
     const ordered = this.state.ordered;
     const lists = this.state.lists;
     const order = this.state.order;
     const { containerHeight } = this.props;
-    //console.log(this.state.order.map((key, index) => index))
 
+    const form = 
+    (
+      <form onSubmit={this.addCard.bind(this, 1)} >
+        <input type="text" value={this.state.value} onChange={this.handleCardText} />
+        <input type="submit" value="Add Card" className='btn' />
+      </form>
+    )
     const board = (
       <Droppable
         droppableId="board"
