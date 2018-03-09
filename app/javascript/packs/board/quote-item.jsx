@@ -94,7 +94,6 @@ export default class QuoteItem extends React.PureComponent {
     if (!this.props.autoFocus) {
       return;
     }
-
     // eslint-disable-next-line react/no-find-dom-node
     const node: HTMLElement = (ReactDOM.findDOMNode(this) : any);
     node.focus();
@@ -110,16 +109,16 @@ export default class QuoteItem extends React.PureComponent {
         {...provided.draggableProps}
         {...provided.dragHandleProps}
       >
-        <Avatar src={quote.name} alt={quote.name} />
         <Content>
           <BlockQuote>{quote.name}</BlockQuote>
-          <Footer>
-            <QuoteId>(id: {quote.id})</QuoteId>
-            <Attribution>{quote.name}</Attribution>
-          </Footer>
         </Content>
       </Container>
     );
   }
 }
 
+//<Avatar src={quote.name} alt={quote.name} />
+//<Footer>
+//  <QuoteId>(id: {quote.id})</QuoteId>
+//  <Attribution>{quote.name}</Attribution>
+//</Footer>

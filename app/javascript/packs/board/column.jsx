@@ -31,6 +31,7 @@ const Header = styled.div`
 `;
 
 export default class Column extends Component {
+
   render() {
     const title = this.props.title;
     const quotes = this.props.quotes;

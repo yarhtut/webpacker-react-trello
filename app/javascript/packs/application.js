@@ -11,7 +11,6 @@ import React from 'react'
 import ReactDOM from 'react-dom'
 import Lists from './components/lists.jsx'
 import Board from './board/board'
-import { authorQuoteMap,data } from './board/data';
 
 document.addEventListener('DOMContentLoaded', () => {
   ReactDOM.render(
@@ -36,7 +35,7 @@ class App extends React.Component {
 
   render() {
     return (
-      <Board initial={authorQuoteMap} lists={this.state.lists} />
+      <Board lists={this.state.lists} />
     )
   }
 }
