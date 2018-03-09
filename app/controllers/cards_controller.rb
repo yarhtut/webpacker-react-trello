@@ -53,11 +53,6 @@ class CardsController < ApplicationController
     @card.destroy
     @new_card = Card.new(list_id: new_list_id, name: new_name,  position: new_position)
     @new_card.save
-    # @card.destroy
-    # respond_to do |format|
-    #   format.html { redirect_to cards_url, notice: 'Card was successfully destroyed.' }
-    #   format.json { head :no_content }
-    # end
   end
 
   private
