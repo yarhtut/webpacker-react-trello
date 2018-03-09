@@ -1,4 +1,3 @@
-// @flow
 export const colors = {
   blue: {
     deep: 'rgb(0, 121, 191)',

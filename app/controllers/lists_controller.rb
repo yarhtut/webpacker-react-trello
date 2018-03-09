@@ -43,7 +43,7 @@ class ListsController < ApplicationController
   # PATCH/PUT /lists/1
   # PATCH/PUT /lists/1.json
   def update
-      @list_position.update_attributes(position: list_params['position'])
+    @list_position.update_attributes(position: list_params['position'])
   end
 
   # DELETE /lists/1

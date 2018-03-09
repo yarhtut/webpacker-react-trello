@@ -1,5 +1,3 @@
-// @flow
-// a little function to help us with reordering the result
 const reorder = (
   list,
   startIndex,
@@ -27,7 +25,6 @@ const reorder = (
     return result;
   };
 
-  export default reorder;
 
   const reorderCards = (
     list,
@@ -41,9 +38,11 @@ const reorder = (
       const updatePosition = endIndex + 1;
 
       const token = document.querySelector(`meta[name='csrf-token']`).getAttribute('content');
-      const data = { position:  updatePosition }
+      const data = { position:  updatePosition  }
 
-      fetch(`/cards/${moveItem}` , {
+      const currentMoveCard = list.filter((l) => l.position == moveItem )
+
+      fetch(`/cards/${currentMoveCard[0].id}` , {
         body: JSON.stringify(data),
         method: 'PATCH',
         headers: {
@@ -83,12 +82,12 @@ const reorder = (
       }
 
       // moving to different list
-
       const token = document.querySelector(`meta[name='csrf-token']`).getAttribute('content');
       const listId = current[0].list_id;
       const sourceCard = current.filter((x) =>  x.position == (source.index + 1));
       const cardId = sourceCard[0].id;
       const data = { source: source, destination: destination, listId: listId, cardId: cardId }
+
       fetch(`/cards/${cardId}` , {
         body: JSON.stringify(data),
         method: 'DELETE',
@@ -115,3 +114,4 @@ const reorder = (
       };
     };
 
+  export default reorder;

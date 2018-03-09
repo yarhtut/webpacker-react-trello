@@ -125,7 +125,6 @@ class InnerList extends Component {
           <input type="text" value={this.state.value} onChange={this.handleCardText} />
           <input type="submit" value="Add Card" className='btn' />
         </form>
-        <button onClick={this.openForm.bind(this, currentListId[0])} className='btn'>Add Card</button>
       </Container>
     );
   }
@@ -182,3 +181,5 @@ export default class QuoteList extends Component<Props> {
     );
   }
 }
+
+// <button onClick={this.openForm.bind(this, currentListId[0])} className='btn'>Add Card</button>

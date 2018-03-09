@@ -67,7 +67,7 @@ class CardsController < ApplicationController
   end
 
   def set_card_by_position
-    @card_position = Card.find_by_position(params[:id])
+    @card_position = Card.find_by(id: params[:id])
   end
 
   # Never trust parameters from the scary internet, only allow the white list through.
