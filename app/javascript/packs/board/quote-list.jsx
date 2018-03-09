@@ -130,7 +130,7 @@ class InnerList extends Component {
   }
 }
 
-export default class QuoteList extends Component<Props> {
+export default class QuoteList extends Component {
   render() {
     const {
       ignoreContainerClipping,
@@ -181,5 +181,3 @@ export default class QuoteList extends Component<Props> {
     );
   }
 }
-
-// <button onClick={this.openForm.bind(this, currentListId[0])} className='btn'>Add Card</button>
