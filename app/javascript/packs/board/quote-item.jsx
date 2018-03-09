@@ -18,7 +18,7 @@ transition: background-color 0.1s ease;
 color: ${colors.black};
 
 &:hover {
-  color: ${colors.black};
+  background-color: ${colors.blue.lighter};
   text-decoration: none;
 }
 &:focus {
@@ -48,13 +48,6 @@ flex-direction: column;
 `;
 
 const BlockQuote = styled.div`
-&::before {
-  content: open-quote;
-}
-
-&::after {
-  content: close-quote;
-}
 `;
 
 const Footer = styled.div`
@@ -62,9 +55,13 @@ display: flex;
 margin-top: ${grid}px;
 `;
 
-const QuoteId = styled.small`
+const QuoteId = styled.span`
+width: 40px;
+height: 40px;
+border-radius: 50%;
+margin-right: ${grid}px;
+flex-shrink: 0;
 flex-grow: 0;
-margin: 0;
 `;
 
 const Attribution = styled.small`
@@ -96,6 +93,7 @@ export default class QuoteItem extends React.PureComponent {
       >
         <Content>
           <BlockQuote>{quote.name}</BlockQuote>
+          <QuoteId>(id: {quote.id})</QuoteId>
         </Content>
       </Container>
     );
@@ -104,6 +102,5 @@ export default class QuoteItem extends React.PureComponent {
 
 //<Avatar src={quote.name} alt={quote.name} />
 //<Footer>
-//  <QuoteId>(id: {quote.id})</QuoteId>
 //  <Attribution>{quote.name}</Attribution>
 //</Footer>

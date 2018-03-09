@@ -77,12 +77,17 @@ body {
   color: dimGrey;
 }
 
-input[type=text]{
-  display: inline-flex;
-  width: 98%;
-  height: 2rem;
+form {
+  margin-bottom: .5rem;
+
+  input[type=text] {
+    display: inline-flex;
+    width: 98%;
+    height: 2rem;
+    margin-bottom: .5rem;
+  }
 }
 
 a.btn {
-  color: white; 
+  color: white;
 }

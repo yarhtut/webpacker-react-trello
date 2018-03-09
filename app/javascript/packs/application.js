@@ -9,7 +9,6 @@
 
 import React from 'react'
 import ReactDOM from 'react-dom'
-import Lists from './components/lists.jsx'
 import Board from './board/board'
 
 document.addEventListener('DOMContentLoaded', () => {
