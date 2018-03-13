@@ -70,7 +70,7 @@ class InnerList extends Component {
       value: '',
     }
 
-    this.addCard = this.addCard.bind(this);
+    //this.addCard = this.addCard.bind(this);
     this.handleCardText = this.handleCardText.bind(this);
   }
 
@@ -84,9 +84,10 @@ class InnerList extends Component {
 
   addCard(listId, e) {
     e.preventDefault();
+    debugger
     const token = document.querySelector(`meta[name='csrf-token']`).getAttribute('content');
 
-    const data = {  list_id: listId, name: this.state.value }
+    const data = { list_id: listId, name: this.state.value }
 
     fetch(`/cards` , {
       body: JSON.stringify(data),
@@ -97,19 +98,21 @@ class InnerList extends Component {
       },
       credentials: 'same-origin'
     })
-    //.then(() => {
-    //  fetch('/cards.json')
-    //  .then(res => res.json())
-    //  .then(res => this.setState({ cards: res }))
-    //})
+    .then(() => {
+      fetch('/cards.json')
+      .then(res => res.json())
+      .then(res => this.setState({ cards: res }))
+    })
   }
-
+  
   render() {
     const { quotes, dropProvided, autoFocusQuoteId } = this.props;
     const title = this.props.title ? (
       <Title>{this.props.title}</Title>
     ) : null;
     const currentListId = quotes.map((q) => q.list_id)
+
+    //console.log(this.props.addCard);
 
     return (
       <Container>
@@ -121,7 +124,7 @@ class InnerList extends Component {
           />
           {dropProvided.placeholder}
         </DropZone>
-        <form onSubmit={this.addCard.bind(this, currentListId[0])} >
+        <form onSubmit={this.props.addCard(this, currentListId[0])} >
           <input type="text" value={this.state.value} onChange={this.handleCardText} />
           <input type="submit" value="Add Card" className='btn' />
         </form>
@@ -142,7 +145,9 @@ export default class QuoteList extends Component {
       quotes,
       autoFocusQuoteId,
       title,
+      addCard
     } = this.props;
+
 
     return (
       <Droppable
@@ -173,6 +178,7 @@ export default class QuoteList extends Component {
                 title={title}
                 dropProvided={dropProvided}
                 autoFocusQuoteId={autoFocusQuoteId}
+                addCard={addCard}
               />
             )}
           </Wrapper>

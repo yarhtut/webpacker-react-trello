@@ -58,6 +58,7 @@ export default class Column extends Component {
                 listType="QUOTE"
                 quotes={quotes}
                 autoFocusQuoteId={this.props.autoFocusQuoteId}
+                addCard={this.props.addCard}
               />
             </Container>
             {provided.placeholder}

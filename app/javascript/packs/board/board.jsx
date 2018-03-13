@@ -12,6 +12,8 @@ export default class Board extends Component {
       order: Object.keys(this.props.lists),
       autoFocusQuoteId: null,
     }
+
+    this.addCard = this.addCard.bind(this);
   }
 
   boardRef: ?HTMLElement
@@ -22,6 +24,12 @@ export default class Board extends Component {
     .then(res => this.setState({ lists: res , order: Object.keys(res) }))
 
     injectGlobal` body { background: rgb(0, 121, 191); } `;
+  }
+
+  addCard(listId) {
+    e.preventDefault();
+    console.log('state')
+    console.log(listId)
   }
 
   onDragStart = (initial) => {
@@ -87,9 +95,11 @@ export default class Board extends Component {
                 quotes={lists[key]}
                 lists={lists}
                 autoFocusQuoteId={this.state.autoFocusQuoteId}
+                addCard={this.addCard}
               />
             ))}
           </Container>
+          
         )}
       </Droppable>
     );
