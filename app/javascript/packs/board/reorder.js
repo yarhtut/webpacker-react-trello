@@ -1,3 +1,5 @@
+const token = document.querySelector(`meta[name='csrf-token']`).getAttribute('content');
+
 const reorder = (
   list,
   startIndex,
@@ -9,7 +11,6 @@ const reorder = (
     const moveItem = startIndex + 1;
     const updatePosition = endIndex + 1;
 
-    const token = document.querySelector(`meta[name='csrf-token']`).getAttribute('content');
     const data = { position:  updatePosition }
 
     fetch(`/lists/${moveItem}` , {
@@ -37,7 +38,6 @@ const reorder = (
       const moveItem = startIndex + 1;
       const updatePosition = endIndex + 1;
 
-      const token = document.querySelector(`meta[name='csrf-token']`).getAttribute('content');
       const data = { position:  updatePosition  }
 
       const currentMoveCard = list.filter((l) => l.position == moveItem )
@@ -82,7 +82,6 @@ const reorder = (
       }
 
       // moving to different list
-      const token = document.querySelector(`meta[name='csrf-token']`).getAttribute('content');
       const listId = current[0].list_id;
       const sourceCard = current.filter((x) =>  x.position == (source.index + 1));
       const cardId = sourceCard[0].id;

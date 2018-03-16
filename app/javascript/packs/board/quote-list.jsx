@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import styled from 'styled-components';
 import { Droppable, Draggable } from 'react-beautiful-dnd';
 import QuoteItem from './quote-item';
-import Title from './title';
+import { colors, grid } from './constants';
 
 const Wrapper = styled.div`
 background-color: ${({ isDraggingOver }) => (isDraggingOver ? '#d9fcff' : 'lightblue')};
@@ -25,6 +25,18 @@ const ScrollContainer = styled.div`
 overflow-x: hidden;
 overflow-y: auto;
 max-height: 300px;
+`;
+
+const Title = styled.h4`
+  padding: ${grid}px;
+  transition: background-color ease 0.2s;
+  flex-grow: 1;
+  user-select: none;
+  position: relative;
+  &:focus {
+    outline: 2px solid ${colors.purple};
+    outline-offset: 2px;
+  }
 `;
 
 const Container = styled.div``;

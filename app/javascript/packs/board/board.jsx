@@ -16,7 +16,7 @@ export default class Board extends Component {
     this.addCard = this.addCard.bind(this);
   }
 
-  boardRef: ?HTMLElement
+  //boardRef: ?HTMLElement
 
   componentWillMount() {
     fetch('/lists.json')
@@ -27,9 +27,9 @@ export default class Board extends Component {
   }
 
   addCard(listId) {
-    e.preventDefault();
+    //e.preventDefault();
     console.log('state')
-    console.log(listId)
+    console.log(listId.props.quotes[0].list_id)
   }
 
   onDragStart = (initial) => {

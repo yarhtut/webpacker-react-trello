@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import styled from 'styled-components';
 import { Draggable } from 'react-beautiful-dnd';
 import QuoteList from './quote-list';
-import Title from './title';
+import { colors, grid } from './constants';
 
 const Wrapper = styled.div`
   display: flex;
@@ -29,13 +29,26 @@ const Header = styled.div`
   }
 `;
 
-export default class Column extends Component {
+const Title = styled.h4`
+  padding: ${grid}px;
+  transition: background-color ease 0.2s;
+  flex-grow: 1;
+  user-select: none;
+  position: relative;
+  &:focus {
+    outline: 2px solid ${colors.purple};
+    outline-offset: 2px;
+  }
+`;
 
+export default class Column extends Component {
   render() {
-    const title = this.props.title;
-    const quotes = this.props.quotes;
-    const lists = this.props.lists;
-    const index = this.props.index;
+    const {
+      title,
+      quotes,
+      lists,
+      index
+    } = this.props;
 
     return (
       <Draggable draggableId={title} index={index}>
