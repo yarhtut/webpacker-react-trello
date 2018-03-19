@@ -10,7 +10,7 @@ export default class Board extends Component {
     this.state = {
       lists: this.props.lists,
       order: Object.keys(this.props.lists),
-      autoFocusQuoteId: null,
+      autoFocusQuoteId: null
     }
 
     this.addCard = this.addCard.bind(this);
@@ -26,10 +26,30 @@ export default class Board extends Component {
     injectGlobal` body { background: rgb(0, 121, 191); } `;
   }
 
-  addCard(listId) {
-    //e.preventDefault();
-    console.log('state')
-    console.log(listId.props.quotes[0].list_id)
+  handleCardText(e) {
+    this.setState({value: e.target.value});
+  }
+  addCard(listId, card, e) {
+    e.preventDefault();
+
+    const token = document.querySelector(`meta[name='csrf-token']`).getAttribute('content');
+
+    const data = { list_id: listId, name: card }
+
+    fetch(`/cards` , {
+      body: JSON.stringify(data),
+      method: 'POST',
+      headers: {
+        'Content-type': 'application/json',
+        'X-CSRF-TOKEN': token
+      },
+      credentials: 'same-origin'
+    })
+    .then(() => {
+      fetch('/lists.json')
+      .then(res => res.json())
+      .then(res => this.setState({ lists: res , order: Object.keys(res) }))
+    })
   }
 
   onDragStart = (initial) => {
@@ -96,6 +116,8 @@ export default class Board extends Component {
                 lists={lists}
                 autoFocusQuoteId={this.state.autoFocusQuoteId}
                 addCard={this.addCard}
+                cardText={this.state.value}
+                handleCardText={this.handleCardText}
               />
             ))}
           </Container>
