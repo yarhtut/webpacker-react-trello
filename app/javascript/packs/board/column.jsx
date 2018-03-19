@@ -47,7 +47,10 @@ export default class Column extends Component {
       title,
       quotes,
       lists,
-      index
+      index,
+      addCard,
+      cardText,
+      handleCardText
     } = this.props;
 
     return (
@@ -71,7 +74,9 @@ export default class Column extends Component {
                 listType="QUOTE"
                 quotes={quotes}
                 autoFocusQuoteId={this.props.autoFocusQuoteId}
-                addCard={this.props.addCard}
+                addCard={addCard}
+                cardText={cardText}
+                handleCardText={handleCardText}
               />
             </Container>
             {provided.placeholder}

@@ -50,7 +50,6 @@ class InnerQuoteList extends Component {
   }
 
   render() {
-    //console.log(this.props.quotes.map((quote, index) => console.log(quote)));
     return (
       <div>
         {this.props.quotes.map((quote, index) => (
@@ -79,52 +78,24 @@ class InnerList extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      value: '',
+      value: ''
     }
 
-    //this.addCard = this.addCard.bind(this);
     this.handleCardText = this.handleCardText.bind(this);
-  }
-
-  openForm(listId, e) {
-    //this.setState({formKey: listId, value: ''});
   }
 
   handleCardText(e) {
     this.setState({value: e.target.value});
   }
 
-  addCard(listId, e) {
-    e.preventDefault();
-    debugger
-    const token = document.querySelector(`meta[name='csrf-token']`).getAttribute('content');
-
-    const data = { list_id: listId, name: this.state.value }
-
-    fetch(`/cards` , {
-      body: JSON.stringify(data),
-      method: 'POST',
-      headers: {
-        'Content-type': 'application/json',
-        'X-CSRF-TOKEN': token
-      },
-      credentials: 'same-origin'
-    })
-    .then(() => {
-      fetch('/cards.json')
-      .then(res => res.json())
-      .then(res => this.setState({ cards: res }))
-    })
-  }
-  
   render() {
-    const { quotes, dropProvided, autoFocusQuoteId } = this.props;
+    const { quotes, dropProvided, autoFocusQuoteId, cardText } = this.props;
     const title = this.props.title ? (
       <Title>{this.props.title}</Title>
     ) : null;
     const currentListId = quotes.map((q) => q.list_id)
 
-    //console.log(this.props.addCard);
+    const addCard = this.props.addCard.bind(null, currentListId[0], this.state.value);
 
     return (
       <Container>
@@ -136,9 +107,9 @@ class InnerList extends Component {
           />
           {dropProvided.placeholder}
         </DropZone>
-        <form onSubmit={this.props.addCard(this, currentListId[0])} >
+        <form>
           <input type="text" value={this.state.value} onChange={this.handleCardText} />
-          <input type="submit" value="Add Card" className='btn' />
+          <input type="submit" value="Add Card" className='btn' onClick={addCard} />
         </form>
       </Container>
     );
@@ -157,7 +128,9 @@ export default class QuoteList extends Component {
       quotes,
       autoFocusQuoteId,
       title,
-      addCard
+      addCard,
+      handleCardText,
+      cardText
     } = this.props;
 
 
@@ -191,6 +164,8 @@ export default class QuoteList extends Component {
                 dropProvided={dropProvided}
                 autoFocusQuoteId={autoFocusQuoteId}
                 addCard={addCard}
+                cardText={cardText}
+                handleCardText={handleCardText}
               />
             )}
           </Wrapper>
