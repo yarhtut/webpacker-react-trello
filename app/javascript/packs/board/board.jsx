@@ -3,6 +3,7 @@ import styled, { injectGlobal } from 'styled-components';
 import Column from './column';
 import reorder, { reorderQuoteMap } from './reorder';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
+import  QuoteList from './quote-list';
 
 export default class Board extends Component {
   constructor(props) {
@@ -10,10 +11,14 @@ export default class Board extends Component {
     this.state = {
       lists: this.props.lists,
       order: Object.keys(this.props.lists),
-      autoFocusQuoteId: null
+      autoFocusQuoteId: null,
+      cardText: '',
+      toggleForm: '' 
     }
 
     this.addCard = this.addCard.bind(this);
+    this.handleCardText = this.handleCardText.bind(this);
+    this.handleToggleForm = this.handleToggleForm.bind(this);
   }
 
   //boardRef: ?HTMLElement
@@ -26,12 +31,17 @@ export default class Board extends Component {
     injectGlobal` body { background: rgb(0, 121, 191); } `;
   }
 
-  handleCardText(e) {
-    this.setState({value: e.target.value});
+  handleCardText(listId, e) {
+    this.setState({cardText: e.target.value});
   }
+
+  handleToggleForm(listId, e) {
+    this.setState({ toggleForm: listId, cardText: '' });
+  }
+
   addCard(listId, card, e) {
     e.preventDefault();
-
+    console.log('Yar')
     const token = document.querySelector(`meta[name='csrf-token']`).getAttribute('content');
 
     const data = { list_id: listId, name: card }
@@ -48,7 +58,7 @@ export default class Board extends Component {
     .then(() => {
       fetch('/lists.json')
       .then(res => res.json())
-      .then(res => this.setState({ lists: res , order: Object.keys(res) }))
+      .then(res => this.setState({ lists: res , order: Object.keys(res), toggleForm: null, cardText: '' }))
     })
   }
 
@@ -116,12 +126,13 @@ export default class Board extends Component {
                 lists={lists}
                 autoFocusQuoteId={this.state.autoFocusQuoteId}
                 addCard={this.addCard}
-                cardText={this.state.value}
+                cardText={this.state.cardText}
                 handleCardText={this.handleCardText}
+                toggleForm={this.state.toggleForm}
+                handleToggleForm={this.handleToggleForm}
               />
             ))}
           </Container>
-          
         )}
       </Droppable>
     );
@@ -131,7 +142,7 @@ export default class Board extends Component {
         onDragStart={this.onDragStart}
         onDragEnd={this.onDragEnd}
       >
-        {this.props.containerHeight ? (
+        { this.props.containerHeight ? (
           <ParentContainer height={containerHeight}>{board}</ParentContainer>
         ) : (
         board

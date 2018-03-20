@@ -50,7 +50,9 @@ export default class Column extends Component {
       index,
       addCard,
       cardText,
-      handleCardText
+      handleCardText,
+      handleToggleForm,
+      toggleForm
     } = this.props;
 
     return (
@@ -76,7 +78,9 @@ export default class Column extends Component {
                 autoFocusQuoteId={this.props.autoFocusQuoteId}
                 addCard={addCard}
                 cardText={cardText}
+                toggleForm={toggleForm}
                 handleCardText={handleCardText}
+                handleToggleForm={handleToggleForm}
               />
             </Container>
             {provided.placeholder}

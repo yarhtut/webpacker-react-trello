@@ -28,15 +28,15 @@ max-height: 300px;
 `;
 
 const Title = styled.h4`
-  padding: ${grid}px;
-  transition: background-color ease 0.2s;
-  flex-grow: 1;
-  user-select: none;
-  position: relative;
-  &:focus {
-    outline: 2px solid ${colors.purple};
-    outline-offset: 2px;
-  }
+padding: ${grid}px;
+transition: background-color ease 0.2s;
+flex-grow: 1;
+user-select: none;
+position: relative;
+&:focus {
+  outline: 2px solid ${colors.purple};
+  outline-offset: 2px;
+}
 `;
 
 const Container = styled.div``;
@@ -81,12 +81,17 @@ class InnerList extends Component {
       value: ''
     }
 
-    this.handleCardText = this.handleCardText.bind(this);
+    //  this.handleCardText = this.handleCardText.bind(this);
+    this.removeText = this.removeText.bind(this);
   }
 
-  handleCardText(e) {
-    this.setState({value: e.target.value});
+  removeText() {
+    this.setState({value: '' });
   }
+
+  //handleCardText(e) {
+  //  this.setState({value: e.target.value});
+  //}
 
   render() {
     const { quotes, dropProvided, autoFocusQuoteId, cardText } = this.props;
@@ -95,7 +100,17 @@ class InnerList extends Component {
     ) : null;
     const currentListId = quotes.map((q) => q.list_id)
 
-    const addCard = this.props.addCard.bind(null, currentListId[0], this.state.value);
+    const addCard = this.props.addCard.bind(null, currentListId[0], cardText);
+    const handleCardText = this.props.handleCardText.bind(null, currentListId[0]);
+    const handleToggleForm = this.props.handleToggleForm.bind(null, currentListId[0]);
+
+    const form = (this.props.toggleForm == currentListId[0]) ? (
+      <form onSubmit={addCard}>
+        <input type="text" value={cardText} onChange={handleCardText} />
+        <input type="submit" value="Add Card" className='btn' />
+      </form>
+    ) : <button className='btn' onClick={handleToggleForm}>add new</button>;
+    //const inputText = this.props.currentListId[0] ==
 
     return (
       <Container>
@@ -105,12 +120,9 @@ class InnerList extends Component {
             quotes={quotes}
             autoFocusQuoteId={autoFocusQuoteId}
           />
-          {dropProvided.placeholder}
+          { dropProvided.placeholder }
         </DropZone>
-        <form>
-          <input type="text" value={this.state.value} onChange={this.handleCardText} />
-          <input type="submit" value="Add Card" className='btn' onClick={addCard} />
-        </form>
+        { form }
       </Container>
     );
   }
@@ -129,10 +141,11 @@ export default class QuoteList extends Component {
       autoFocusQuoteId,
       title,
       addCard,
+      cardText,
       handleCardText,
-      cardText
+      handleToggleForm,
+      toggleForm
     } = this.props;
-
 
     return (
       <Droppable
@@ -165,7 +178,9 @@ export default class QuoteList extends Component {
                 autoFocusQuoteId={autoFocusQuoteId}
                 addCard={addCard}
                 cardText={cardText}
+                toggleForm={toggleForm}
                 handleCardText={handleCardText}
+                handleToggleForm={handleToggleForm}
               />
             )}
           </Wrapper>
