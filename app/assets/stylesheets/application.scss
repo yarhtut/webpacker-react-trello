@@ -75,12 +75,14 @@ body {
   border-radius: 1rem;
   border: 1px solid white;
   color: dimGrey;
+  margin: .5rem 0;
 }
 
 form {
-  margin-bottom: .5rem;
+  margin: .5rem 0;
 
   input[type=text] {
+    margin-top: 1rem;
     display: inline-flex;
     width: 98%;
     height: 2rem;

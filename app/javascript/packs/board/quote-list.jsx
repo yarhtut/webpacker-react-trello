@@ -110,7 +110,6 @@ class InnerList extends Component {
         <input type="submit" value="Add Card" className='btn' />
       </form>
     ) : <button className='btn' onClick={handleToggleForm}>add new</button>;
-    //const inputText = this.props.currentListId[0] ==
 
     return (
       <Container>
