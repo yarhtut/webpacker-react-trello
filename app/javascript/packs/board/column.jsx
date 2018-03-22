@@ -73,6 +73,7 @@ export default class Column extends Component {
               </Header>
               <QuoteList
                 listId={title}
+                index={index}
                 listType="QUOTE"
                 quotes={quotes}
                 autoFocusQuoteId={this.props.autoFocusQuoteId}
