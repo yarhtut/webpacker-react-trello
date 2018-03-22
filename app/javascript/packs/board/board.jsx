@@ -1,8 +1,10 @@
 import React, { Component } from 'react';
 import styled, { injectGlobal } from 'styled-components';
+
+import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
+
 import Column from './column';
 import reorder, { reorderQuoteMap } from './reorder';
-import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import  QuoteList from './quote-list';
 
 export default class Board extends Component {
@@ -13,12 +15,18 @@ export default class Board extends Component {
       order: Object.keys(this.props.lists),
       autoFocusQuoteId: null,
       cardText: '',
-      toggleForm: '' 
+      listValue: '',
+      toggleForm: '',
+      toogleListForm: false
     }
 
+    this.newList = this.newList.bind(this);
     this.addCard = this.addCard.bind(this);
     this.handleCardText = this.handleCardText.bind(this);
+    this.handleListText = this.handleListText.bind(this);
     this.handleToggleForm = this.handleToggleForm.bind(this);
+    this.handleToggleListForm = this.handleToggleListForm.bind(this);
+
   }
 
   //boardRef: ?HTMLElement
@@ -31,8 +39,38 @@ export default class Board extends Component {
     injectGlobal` body { background: rgb(0, 121, 191); } `;
   }
 
+  newList(e) {
+    e.preventDefault();
+    const token = document.querySelector(`meta[name='csrf-token']`).getAttribute('content');
+
+    const data = { name: this.state.listValue }
+    console.log(data)
+    fetch(`/lists` , {
+      body: JSON.stringify(data),
+      method: 'POST',
+      headers: {
+        'Content-type': 'application/json',
+        'X-CSRF-TOKEN': token
+      },
+      credentials: 'same-origin'
+    })
+    .then(() => {
+      fetch('/lists.json')
+      .then(res => res.json())
+      .then(res => this.setState({ lists: res , order: Object.keys(res), toggleListForm: false, listValue: '' }))
+    })
+  }
+
   handleCardText(listId, e) {
     this.setState({cardText: e.target.value});
+  }
+
+  handleToggleListForm() {
+    this.setState({toggleListForm: true});
+  }
+
+  handleListText( e) {
+    this.setState({listValue: e.target.value});
   }
 
   handleToggleForm(listId, e) {
@@ -41,11 +79,10 @@ export default class Board extends Component {
 
   addCard(listId, card, e) {
     e.preventDefault();
-    console.log('Yar')
     const token = document.querySelector(`meta[name='csrf-token']`).getAttribute('content');
 
     const data = { list_id: listId, name: card }
-
+console.log(data)
     fetch(`/cards` , {
       body: JSON.stringify(data),
       method: 'POST',
@@ -107,6 +144,12 @@ export default class Board extends Component {
     const lists = this.state.lists;
     const order = this.state.order;
     const { containerHeight } = this.props;
+    const listForm = this.state.toggleListForm ? (
+      <form onSubmit={this.newList}>
+        <input type="text" value={this.state.listValue} onChange={this.handleListText} />
+        <input type="submit" value="Add Card" className='btn' />
+      </form>
+    ) : <NewList><button className='bg-btn' onClick={this.handleToggleListForm}>New list</button></NewList>
 
     const board = (
       <Droppable
@@ -132,6 +175,7 @@ export default class Board extends Component {
                 handleToggleForm={this.handleToggleForm}
               />
             ))}
+            { listForm }
           </Container>
         )}
       </Droppable>
@@ -162,5 +206,13 @@ const Container = styled.div`
 min-height: 100vh;
 min-width: 100vw;
 display: inline-flex;
+`;
+
+const NewList = styled.div`
+margin: 8px;
+width: 10rem;
+height: 3rem;
+display: flex;
+flex-direction: column;
 `;
 

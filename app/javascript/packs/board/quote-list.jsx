@@ -75,23 +75,6 @@ class InnerQuoteList extends Component {
 }
 
 class InnerList extends Component {
-  constructor(props) {
-    super(props)
-    this.state = {
-      value: ''
-    }
-
-    //  this.handleCardText = this.handleCardText.bind(this);
-    this.removeText = this.removeText.bind(this);
-  }
-
-  removeText() {
-    this.setState({value: '' });
-  }
-
-  //handleCardText(e) {
-  //  this.setState({value: e.target.value});
-  //}
 
   render() {
     const { quotes, dropProvided, autoFocusQuoteId, cardText } = this.props;
@@ -104,6 +87,8 @@ class InnerList extends Component {
     const handleCardText = this.props.handleCardText.bind(null, currentListId[0]);
     const handleToggleForm = this.props.handleToggleForm.bind(null, currentListId[0]);
 
+    console.log(currentListId[0])
+    console.log(quotes)
     const form = (this.props.toggleForm == currentListId[0]) ? (
       <form onSubmit={addCard}>
         <input type="text" value={cardText} onChange={handleCardText} />
