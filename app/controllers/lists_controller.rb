@@ -5,7 +5,6 @@ class ListsController < ApplicationController
   # GET /lists
   # GET /lists.json
   def index
-    #lists = Hash[list.each_slice(2).to_a]
     list = List.all.sort_by{ |l| l.position }
     render json:  list.collect { |x| [  x.name,  x.cards ] }.to_h
   end
@@ -31,6 +30,7 @@ class ListsController < ApplicationController
 
     respond_to do |format|
       if @list.save
+        broadcast
         format.html { redirect_to @list, notice: 'List was successfully created.' }
         format.json { render :show, status: :created, location: @list }
       else
@@ -57,6 +57,11 @@ class ListsController < ApplicationController
   end
 
   private
+  def broadcast
+    list = List.all.sort_by{ |l| l.position }
+    ActionCable.server.broadcast 'list_channel', message: list.collect { |x| [  x.name,  x.cards ] }.to_json
+  end
+
   # Use callbacks to share common setup or constraints between actions.
   def set_list
     @list = List.find(params[:id])

@@ -17,7 +17,8 @@ export default class Board extends Component {
       cardText: '',
       listValue: '',
       toggleForm: '',
-      toogleListForm: false
+      toogleListForm: false,
+      test: ''
     }
 
     this.newList = this.newList.bind(this);
@@ -26,7 +27,12 @@ export default class Board extends Component {
     this.handleListText = this.handleListText.bind(this);
     this.handleToggleForm = this.handleToggleForm.bind(this);
     this.handleToggleListForm = this.handleToggleListForm.bind(this);
-
+    const binder = this
+    App.cable.subscriptions.create("ListsChannel", {
+      received: function(data) {
+        binder.setState({test: JSON.parse(data.message)})
+      }
+    });
   }
 
   //boardRef: ?HTMLElement
@@ -37,6 +43,8 @@ export default class Board extends Component {
     .then(res => this.setState({ lists: res , order: Object.keys(res) }))
 
     injectGlobal` body { background: rgb(0, 121, 191); } `;
+
+    console.log(this.state.test)
   }
 
   newList(e) {
@@ -44,7 +52,6 @@ export default class Board extends Component {
     const token = document.querySelector(`meta[name='csrf-token']`).getAttribute('content');
 
     const data = { name: this.state.listValue }
-    console.log(data)
     fetch(`/lists` , {
       body: JSON.stringify(data),
       method: 'POST',

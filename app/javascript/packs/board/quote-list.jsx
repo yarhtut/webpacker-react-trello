@@ -83,10 +83,6 @@ class InnerList extends Component {
     const currentListId = quotes.map((q) => q.list_id)
     const listId = currentListId[0] ?   currentListId[0] : (index +1)
 
-    console.log('current')
-    console.log(currentListId[0])
-    console.log('index')
-    console.log(index)
     const addCard = this.props.addCard.bind(null, listId, cardText);
     const handleCardText = this.props.handleCardText.bind(null, currentListId[0]);
     const handleToggleForm = this.props.handleToggleForm.bind(null, currentListId[0]);
