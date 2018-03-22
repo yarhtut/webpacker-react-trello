@@ -3,12 +3,20 @@ import ReactDOM from 'react-dom';
 import styled from 'styled-components';
 import { borderRadius, colors, grid } from './constants';
 import Modal from 'react-modal';
+import { Progress } from 'react-sweet-progress';
+import { Line, Circle } from 'rc-progress';
+
+import { TodoForm, TodoList } from '../components/todo/';
+import { addTodo, generateId , findById, toggleTodo, updateTodo} from '../lib/todoHelpers.js';
 
 export default class QuoteItem extends React.PureComponent {
   constructor(props) {
     super(props)
     this.state = {
-      modalIsOpen: false
+      modalIsOpen: false,
+      todos: []
+      ,
+    currentTodo: ''
     }
 
     this.openModal = this.openModal.bind(this);
@@ -25,12 +33,13 @@ export default class QuoteItem extends React.PureComponent {
     node.focus();
   }
 
-  openModal() {
-    this.setState({modalIsOpen: true});
+  openModal(storyId) {
+    fetch(`/cards/${storyId}.json`)
+    .then(res => res.json())
+    .then(res => this.setState({ todos: res , modalIsOpen: true }))
   }
 
   afterOpenModal() {
-    // references are now sync'd and can be accessed.
     this.subtitle.style.color = '#000';
   }
 
@@ -38,42 +47,92 @@ export default class QuoteItem extends React.PureComponent {
     this.setState({modalIsOpen: false});
   }
 
+  handleToggle = (id) => {
+    const todo = findById(id, this.state.todos)
+    const toggled = toggleTodo(todo)
+    const updatedTodos = updateTodo(this.state.todos, toggled)
+
+    this.setState({ todos: updatedTodos })
+  }
+
+  handleOnChange = (e) => {
+    this.setState({ currentTodo: e.target.value });
+  }
+
+  handleSubmit = (storyId, e) => {
+    e.preventDefault();
+
+    const token = document.querySelector(`meta[name='csrf-token']`).getAttribute('content');
+    const data = { card_id: storyId, text: this.state.currentTodo, checked: false }
+
+    fetch(`/todos` , {
+      body: JSON.stringify(data),
+      method: 'POST',
+      headers: {
+        'Content-type': 'application/json',
+        'X-CSRF-TOKEN': token
+      },
+      credentials: 'same-origin'
+    })
+    .then(() => {
+      fetch(`/cards/${storyId}.json`)
+      .then(res => res.json())
+      .then(res => this.setState({ todos: res, errorMessage: '', currentTodo: '' }))
+    })
+  }
+
+  handleEmptySubmit = (storyId, e) => {
+    e.preventDefault();
+    this.setState({ errorMessage: 'Please suply a new todo name' });
+  }
+
   render() {
     const { quote, isDragging, provided } = this.props;
+    const submitHandler = this.state.currentTodo ? this.handleSubmit.bind(this, quote.id) : this.handleEmptySubmit.bind(this, quote.id);
     return (
-    <div>
-      <Container
-        isDragging={isDragging}
-        innerRef={provided.innerRef}
-        {...provided.draggableProps}
-        {...provided.dragHandleProps}
-        onClick={this.openModal}
-      >
-        <Content>
-          <BlockQuote>{quote.name}</BlockQuote>
-          <QuoteId>(id: {quote.id})</QuoteId>
-        </Content>
-      </Container>
-      <Modal
-        isOpen={this.state.modalIsOpen}
-        onAfterOpen={this.afterOpenModal}
-        onRequestClose={this.closeModal}
-        style={customStyles}
-        contentLabel="Example Modal"
-      >
-        <h2 ref={subtitle => this.subtitle = subtitle}>Hello</h2>
-        <button onClick={this.closeModal}>close</button>
-        <div>I am a modal</div>
-        <form>
-          <input />
-          <button>tab navigation</button>
-          <button>stays</button>
-          <button>inside</button>
-          <button>the modal</button>
-        </form>
-      </Modal>
-    </div>
-  );
+      <div>
+        <Container
+          isDragging={isDragging}
+          innerRef={provided.innerRef}
+          {...provided.draggableProps}
+          {...provided.dragHandleProps}
+          onClick={this.openModal.bind(this, quote.id)}
+        >
+          <Content>
+            <BlockQuote>{quote.name}</BlockQuote>
+            <QuoteId>(id: {quote.id})</QuoteId>
+          </Content>
+        </Container>
+
+        <Modal
+          isOpen={this.state.modalIsOpen}
+          onAfterOpen={this.afterOpenModal}
+          onRequestClose={this.closeModal}
+          style={customStyles}
+          contentLabel={quote.name}
+        >
+          <h2 ref={subtitle => this.subtitle = subtitle}>{quote.name}</h2>
+          <button onClick={this.closeModal}>close</button>
+
+          <p>{quote.description}</p>
+
+          <div className='progress-bar'>
+            <Line percent="88" strokeWidth="2" strokeColor="#ff0000" />
+          </div>
+
+          <div className='todo-app'>
+            { this.state.errorMessage && <span className='error'> {this.state.errorMessage}</span> }
+            <TodoForm currentTodo={this.state.currentTodo}
+              handleOnChange={this.handleOnChange}
+              handleSubmit={submitHandler}
+            />
+            <div className='todo-list'>
+              <TodoList todos={this.state.todos} handleToggle={this.handleToggle} />
+            </div>
+          </div>
+        </Modal>
+      </div>
+    );
   }
 }
 

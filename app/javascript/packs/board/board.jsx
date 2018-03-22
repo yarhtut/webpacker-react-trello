@@ -5,7 +5,7 @@ import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 
 import Column from './column';
 import reorder, { reorderQuoteMap } from './reorder';
-import  QuoteList from './quote-list';
+import QuoteList from './quote-list';
 
 export default class Board extends Component {
   constructor(props) {
@@ -17,8 +17,7 @@ export default class Board extends Component {
       cardText: '',
       listValue: '',
       toggleForm: '',
-      toogleListForm: false,
-      test: ''
+      toogleListForm: false
     }
 
     this.newList = this.newList.bind(this);
@@ -27,10 +26,12 @@ export default class Board extends Component {
     this.handleListText = this.handleListText.bind(this);
     this.handleToggleForm = this.handleToggleForm.bind(this);
     this.handleToggleListForm = this.handleToggleListForm.bind(this);
+
     const binder = this
-    App.cable.subscriptions.create("ListsChannel", {
+    App.cable.subscriptions.create("list_channel", {
       received: function(data) {
-        binder.setState({test: JSON.parse(data.message)})
+        console.log(data)
+        binder.setState({ lists:  JSON.parse(data.message), order: Object.keys(JSON.parse(data.message)) })
       }
     });
   }
@@ -43,8 +44,6 @@ export default class Board extends Component {
     .then(res => this.setState({ lists: res , order: Object.keys(res) }))
 
     injectGlobal` body { background: rgb(0, 121, 191); } `;
-
-    console.log(this.state.test)
   }
 
   newList(e) {

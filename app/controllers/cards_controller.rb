@@ -11,6 +11,8 @@ class CardsController < ApplicationController
   # GET /cards/1
   # GET /cards/1.json
   def show
+    card = Card.find_by_id(params[:id])
+    render json:  card.todos
   end
 
   # GET /cards/new
@@ -26,6 +28,7 @@ class CardsController < ApplicationController
   # POST /cards.json
   def create
      @card = Card.new(card_params)
+     broadcast
     
     respond_to do |format|
       if @card.save
@@ -56,6 +59,10 @@ class CardsController < ApplicationController
   end
 
   private
+  def broadcast
+    list = List.all.sort_by{ |l| l.position }
+    ActionCable.server.broadcast 'list_channel', message: list.collect { |x| [  x.name,  x.cards ] }.to_json
+  end
   # Use callbacks to share common setup or constraints between actions.
   def set_card
     @card = Card.find(params[:id])

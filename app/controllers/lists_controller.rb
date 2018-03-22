@@ -7,6 +7,7 @@ class ListsController < ApplicationController
   def index
     list = List.all.sort_by{ |l| l.position }
     render json:  list.collect { |x| [  x.name,  x.cards ] }.to_h
+    broadcast
   end
 
   # GET /lists/1
@@ -27,6 +28,7 @@ class ListsController < ApplicationController
   # POST /lists.json
   def create
     @list = List.new(list_params)
+    broadcast
 
     respond_to do |format|
       if @list.save
