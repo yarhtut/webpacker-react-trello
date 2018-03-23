@@ -14,14 +14,18 @@ export default class QuoteItem extends React.PureComponent {
     super(props)
     this.state = {
       modalIsOpen: false,
-      todos: []
-      ,
-    currentTodo: ''
+      todos: [],
+      currentTodo: '',
+      progressTodo: 0
     }
 
     this.openModal = this.openModal.bind(this);
     this.afterOpenModal = this.afterOpenModal.bind(this);
     this.closeModal = this.closeModal.bind(this);
+    this.handleToggle = this.handleToggle.bind(this);
+    this.handleSubmit = this.handleSubmit.bind(this);
+    this.handleOnChange = this.handleOnChange.bind(this);
+    this.handleEmptySubmit = this.handleEmptySubmit.bind(this);
   }
 
   componentDidMount() {
@@ -36,30 +40,50 @@ export default class QuoteItem extends React.PureComponent {
   openModal(storyId) {
     fetch(`/cards/${storyId}.json`)
     .then(res => res.json())
-    .then(res => this.setState({ todos: res , modalIsOpen: true }))
+    .then(res => {
+      let totalChecked = res.filter((c) => c.checked == true).length;
+      this.setState({ todos: res , modalIsOpen: true, progressTodo: (Math.round(totalChecked / res.length * 100)) })
+    })
   }
 
   afterOpenModal() {
-    this.subtitle.style.color = '#000';
+    // this.subtitle.style.color = '#000000';
   }
 
   closeModal() {
     this.setState({modalIsOpen: false});
   }
 
-  handleToggle = (id) => {
-    const todo = findById(id, this.state.todos)
+  handleToggle(todoId, storyId) {
+    const todo = findById(todoId, this.state.todos)
     const toggled = toggleTodo(todo)
-    const updatedTodos = updateTodo(this.state.todos, toggled)
+    const token = document.querySelector(`meta[name='csrf-token']`).getAttribute('content');
+    const data = { checked: toggled.checked }
 
-    this.setState({ todos: updatedTodos })
+    fetch(`/todos/${todoId}` , {
+      body: JSON.stringify(data),
+      method: 'PATCH',
+      headers: {
+        'Content-type': 'application/json',
+        'X-CSRF-TOKEN': token
+      },
+      credentials: 'same-origin'
+    })
+    .then(() => {
+      fetch(`/cards/${storyId}.json`)
+      .then(res => res.json())
+      .then(res => {
+        let totalChecked = res.filter((c) => c.checked == true).length;
+        this.setState({ todos: res , errorMessage: '', currentTodo: '', progressTodo: (Math.round(totalChecked / res.length * 100)) })
+      })
+    })
   }
 
-  handleOnChange = (e) => {
+  handleOnChange(e) {
     this.setState({ currentTodo: e.target.value });
   }
 
-  handleSubmit = (storyId, e) => {
+  handleSubmit(storyId, e) {
     e.preventDefault();
 
     const token = document.querySelector(`meta[name='csrf-token']`).getAttribute('content');
@@ -77,149 +101,152 @@ export default class QuoteItem extends React.PureComponent {
     .then(() => {
       fetch(`/cards/${storyId}.json`)
       .then(res => res.json())
-      .then(res => this.setState({ todos: res, errorMessage: '', currentTodo: '' }))
-    })
-  }
+      .then(res => {
+        let totalChecked = res.filter((c) => c.checked == true).length;
+        this.setState({ todos: res , errorMessage: '', currentTodo: '', progressTodo: (Math.round(totalChecked / res.length * 100)) })
+      })
+      })
+    }
 
-  handleEmptySubmit = (storyId, e) => {
-    e.preventDefault();
-    this.setState({ errorMessage: 'Please suply a new todo name' });
-  }
+    handleEmptySubmit(storyId, e) {
+      e.preventDefault();
+      this.setState({ errorMessage: 'Please suply a new todo name' });
+    }
 
-  render() {
-    const { quote, isDragging, provided } = this.props;
-    const submitHandler = this.state.currentTodo ? this.handleSubmit.bind(this, quote.id) : this.handleEmptySubmit.bind(this, quote.id);
-    return (
-      <div>
-        <Container
-          isDragging={isDragging}
-          innerRef={provided.innerRef}
-          {...provided.draggableProps}
-          {...provided.dragHandleProps}
-          onClick={this.openModal.bind(this, quote.id)}
-        >
-          <Content>
-            <BlockQuote>{quote.name}</BlockQuote>
-            <QuoteId>(id: {quote.id})</QuoteId>
-          </Content>
-        </Container>
+    render() {
+      const { quote, isDragging, provided } = this.props;
+      const submitHandler = this.state.currentTodo ? this.handleSubmit.bind(this, quote.id) : this.handleEmptySubmit.bind(this, quote.id);
+      return (
+        <div>
+          <Container
+            isDragging={isDragging}
+            innerRef={provided.innerRef}
+            {...provided.draggableProps}
+            {...provided.dragHandleProps}
+            onClick={this.openModal.bind(this, quote.id)}
+          >
+            <Content>
+              <BlockQuote>{quote.name}</BlockQuote>
+              <QuoteId>(id: {quote.id})</QuoteId>
+            </Content>
+          </Container>
 
-        <Modal
-          isOpen={this.state.modalIsOpen}
-          onAfterOpen={this.afterOpenModal}
-          onRequestClose={this.closeModal}
-          style={customStyles}
-          contentLabel={quote.name}
-        >
-          <h2 ref={subtitle => this.subtitle = subtitle}>{quote.name}</h2>
-          <button onClick={this.closeModal}>close</button>
+          <Modal
+            isOpen={this.state.modalIsOpen}
+            onAfterOpen={this.afterOpenModal}
+            onRequestClose={this.closeModal}
+            style={customStyles}
+            contentLabel={quote.name}
+          >
+            <h2>{quote.name}</h2>
+            <button onClick={this.closeModal}>close</button>
 
-          <p>{quote.description}</p>
-
-          <div className='progress-bar'>
-            <Line percent="88" strokeWidth="2" strokeColor="#ff0000" />
-          </div>
-
-          <div className='todo-app'>
-            { this.state.errorMessage && <span className='error'> {this.state.errorMessage}</span> }
-            <TodoForm currentTodo={this.state.currentTodo}
-              handleOnChange={this.handleOnChange}
-              handleSubmit={submitHandler}
-            />
-            <div className='todo-list'>
-              <TodoList todos={this.state.todos} handleToggle={this.handleToggle} />
+            <p>{quote.description}</p>
+            <div className='progress-bar'>
+              <p>{this.state.progressTodo} <small> % </small></p>
+              <Line percent={this.state.progressTodo} strokeWidth="1" strokeColor="DodgerBlue" />
             </div>
-          </div>
-        </Modal>
-      </div>
-    );
+
+            <div className='todo-app'>
+              { this.state.errorMessage && <span className='error'> {this.state.errorMessage}</span> }
+              <TodoForm currentTodo={this.state.currentTodo}
+                handleOnChange={this.handleOnChange}
+                handleSubmit={submitHandler}
+              />
+              <div className='todo-list'>
+                <TodoList storyId={quote.id} todos={this.state.todos} handleToggle={this.handleToggle} />
+              </div>
+            </div>
+          </Modal>
+        </div>
+      );
+    }
   }
-}
 
-const customStyles = {
-  content : {
-    top                   : '50%',
-    left                  : '50%',
-    right                 : 'auto',
-    bottom                : 'auto',
-    marginRight           : '-50%',
-    transform             : 'translate(-50%, -50%)',
-    width                 : '780px',
-    minHeight            : '500px'
+  const customStyles = {
+    content : {
+      top                   : '50%',
+      left                  : '50%',
+      right                 : 'auto',
+      bottom                : 'auto',
+      marginRight           : '-50%',
+      transform             : 'translate(-50%, -50%)',
+      width                 : '780px',
+      minHeight            : '500px'
 
+    }
+  };
+
+  const Container = styled.div`
+  border-radius: ${borderRadius}px;
+  border: 1px solid grey;
+  background-color: ${({ isDragging }) => (isDragging ? colors.green : colors.white)};
+
+  box-shadow: ${({ isDragging }) => (isDragging ? `2px 2px 1px ${colors.shadow}` : 'none')};
+  padding: ${grid}px;
+  min-height: 40px;
+  margin-bottom: ${grid}px;
+  user-select: none;
+  transition: background-color 0.1s ease;
+
+  color: ${colors.black};
+
+  &:hover {
+    background-color: ${colors.blue.lighter};
+    text-decoration: none;
   }
-};
+  &:focus {
+    outline: 2px solid ${colors.purple};
+    box-shadow: none;
+  }
 
-const Container = styled.div`
-border-radius: ${borderRadius}px;
-border: 1px solid grey;
-background-color: ${({ isDragging }) => (isDragging ? colors.green : colors.white)};
+  display: flex;
+  align-items: center;
+  `;
 
-box-shadow: ${({ isDragging }) => (isDragging ? `2px 2px 1px ${colors.shadow}` : 'none')};
-padding: ${grid}px;
-min-height: 40px;
-margin-bottom: ${grid}px;
-user-select: none;
-transition: background-color 0.1s ease;
+  const Avatar = styled.img`
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  margin-right: ${grid}px;
+  flex-shrink: 0;
+  flex-grow: 0;
+  `;
 
-color: ${colors.black};
+  const Content = styled.div`
+  flex-grow: 1;
+  flex-basis: 100%
 
-&:hover {
-  background-color: ${colors.blue.lighter};
-  text-decoration: none;
-}
-&:focus {
-  outline: 2px solid ${colors.purple};
-  box-shadow: none;
-}
+  display: flex;
+  flex-direction: column;
+  `;
 
-display: flex;
-align-items: center;
-`;
+  const BlockQuote = styled.div`
+  `;
 
-const Avatar = styled.img`
-width: 40px;
-height: 40px;
-border-radius: 50%;
-margin-right: ${grid}px;
-flex-shrink: 0;
-flex-grow: 0;
-`;
+  const Footer = styled.div`
+  display: flex;
+  margin-top: ${grid}px;
+  `;
 
-const Content = styled.div`
-flex-grow: 1;
-flex-basis: 100%
+  const QuoteId = styled.span`
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  margin-right: ${grid}px;
+  flex-shrink: 0;
+  flex-grow: 0;
+  `;
 
-display: flex;
-flex-direction: column;
-`;
+  const Attribution = styled.small`
+  margin: 0;
+  margin-left: ${grid}px;
+  text-align: right;
+  flex-grow: 1;
+  `;
 
-const BlockQuote = styled.div`
-`;
-
-const Footer = styled.div`
-display: flex;
-margin-top: ${grid}px;
-`;
-
-const QuoteId = styled.span`
-width: 40px;
-height: 40px;
-border-radius: 50%;
-margin-right: ${grid}px;
-flex-shrink: 0;
-flex-grow: 0;
-`;
-
-const Attribution = styled.small`
-margin: 0;
-margin-left: ${grid}px;
-text-align: right;
-flex-grow: 1;
-`;
-
-//        href={quote.name}
-//<Avatar src={quote.name} alt={quote.name} />
-//<Footer>
-//  <Attribution>{quote.name}</Attribution>
-//</Footer>
+  //        href={quote.name}
+  //<Avatar src={quote.name} alt={quote.name} />
+  //<Footer>
+  //  <Attribution>{quote.name}</Attribution>
+  //</Footer>

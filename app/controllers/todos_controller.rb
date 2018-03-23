@@ -1,7 +1,5 @@
 class TodosController < ApplicationController
-  before_action :set_todo, only: [:show, :edit, :destroy]
-  #before_action :set_todo_by_position, only: [:update]
-
+  before_action :set_todo, only: [:show, :edit, :destroy, :update]
 
   # GET /todos
   # GET /todos.json
@@ -35,7 +33,7 @@ class TodosController < ApplicationController
   # PATCH/PUT /todos/1
   # PATCH/PUT /todos/1.json
   def update
-    @todo_position.update_attributes(position: todo_params['position'])
+    @todo.update_attributes(checked: todo_params['checked'])
   end
 
   # DELETE /todos/1
