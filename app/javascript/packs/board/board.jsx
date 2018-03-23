@@ -27,13 +27,13 @@ export default class Board extends Component {
     this.handleToggleForm = this.handleToggleForm.bind(this);
     this.handleToggleListForm = this.handleToggleListForm.bind(this);
 
-    const binder = this
-    App.cable.subscriptions.create("list_channel", {
-      received: function(data) {
-        console.log(data)
-        binder.setState({ lists:  JSON.parse(data.message), order: Object.keys(JSON.parse(data.message)) })
-      }
-    });
+    // const binder = this
+    // App.cable.subscriptions.create("list_channel", {
+    //   received: function(data) {
+    //     console.log(data)
+    //     binder.setState({ lists:  JSON.parse(data.message), order: Object.keys(JSON.parse(data.message)) })
+    //   }
+    // });
   }
 
   //boardRef: ?HTMLElement
@@ -44,6 +44,22 @@ export default class Board extends Component {
     .then(res => this.setState({ lists: res , order: Object.keys(res) }))
 
     injectGlobal` body { background: rgb(0, 121, 191); } `;
+  }
+
+  handleCardText(listId, e) {
+    this.setState({cardText: e.target.value});
+  }
+
+  handleToggleListForm() {
+    this.setState({toggleListForm: true});
+  }
+
+  handleListText( e) {
+    this.setState({listValue: e.target.value});
+  }
+
+  handleToggleForm(listId, e) {
+    this.setState({ toggleForm: listId, cardText: '' });
   }
 
   newList(e) {
@@ -67,28 +83,12 @@ export default class Board extends Component {
     })
   }
 
-  handleCardText(listId, e) {
-    this.setState({cardText: e.target.value});
-  }
-
-  handleToggleListForm() {
-    this.setState({toggleListForm: true});
-  }
-
-  handleListText( e) {
-    this.setState({listValue: e.target.value});
-  }
-
-  handleToggleForm(listId, e) {
-    this.setState({ toggleForm: listId, cardText: '' });
-  }
-
   addCard(listId, card, e) {
     e.preventDefault();
     const token = document.querySelector(`meta[name='csrf-token']`).getAttribute('content');
 
-    const data = { list_id: listId, name: card }
-console.log(data)
+    const data = { list_id: listId, name: card } 
+    debugger
     fetch(`/cards` , {
       body: JSON.stringify(data),
       method: 'POST',

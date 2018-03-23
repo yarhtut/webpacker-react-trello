@@ -5,9 +5,9 @@ class ListsController < ApplicationController
   # GET /lists
   # GET /lists.json
   def index
+    broadcast
     list = List.all.sort_by{ |l| l.position }
     render json:  list.collect { |x| [  x.name,  x.cards ] }.to_h
-    broadcast
   end
 
   # GET /lists/1
@@ -29,17 +29,7 @@ class ListsController < ApplicationController
   def create
     @list = List.new(list_params)
     broadcast
-
-    respond_to do |format|
-      if @list.save
-        broadcast
-        format.html { redirect_to @list, notice: 'List was successfully created.' }
-        format.json { render :show, status: :created, location: @list }
-      else
-        format.html { render :new }
-        format.json { render json: @list.errors, status: :unprocessable_entity }
-      end
-    end
+    @list.save
   end
 
   # PATCH/PUT /lists/1

@@ -80,14 +80,13 @@ class InnerList extends Component {
     const title = this.props.title ? (
       <Title>{this.props.title}</Title>
     ) : null;
+
     const currentListId = quotes.map((q) => q.list_id)
     const listId = currentListId[0] ?   currentListId[0] : (index +1)
 
     const addCard = this.props.addCard.bind(null, listId, cardText);
     const handleCardText = this.props.handleCardText.bind(null, currentListId[0]);
     const handleToggleForm = this.props.handleToggleForm.bind(null, currentListId[0]);
-
-    //    console.log(currentListId[0])
 
     const form = (this.props.toggleForm == currentListId[0]) ? (
       <form onSubmit={addCard}>

@@ -6,11 +6,13 @@ export const TodoItem = (props) => {
 
   return (
     <li>
+      <label>
       <input type='checkbox'
         onChange={handleToggle}
         defaultChecked={props.checked}
       />
       {props.text}
+    </label>
     </li>
   )
 };
