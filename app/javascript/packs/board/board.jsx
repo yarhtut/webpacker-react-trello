@@ -29,12 +29,6 @@ export default class Board extends Component {
     this.handleToggleForm = this.handleToggleForm.bind(this);
     this.handleToggleListForm = this.handleToggleListForm.bind(this);
 
-     const binder = this
-     App.cable.subscriptions.create("ListsChannel", {
-       received: function(data) {
-        binder.setState({ lists:  JSON.parse(data.message), order: Object.keys(JSON.parse(data.message)) })
-       }
-     });
   }
 
   //boardRef: ?HTMLElement
@@ -82,7 +76,7 @@ export default class Board extends Component {
     .then(() => {
       fetch('/lists.json')
       .then(res => res.json())
-       .then(res => this.setState({ lists: res , order: Object.keys(res), toggleListForm: false, listValue: '' }))
+      .then(res => this.setState({ lists: res , order: Object.keys(res), toggleListForm: false, listValue: '' }))
     })
   }
 

@@ -50,6 +50,7 @@ class InnerQuoteList extends Component {
   }
 
   render() {
+    console.log(this.props.quotes)
     return (
       <div>
         {this.props.quotes.map((quote, index) => (
@@ -80,15 +81,16 @@ class InnerList extends Component {
     const title = this.props.title ? (
       <Title>{this.props.title}</Title>
     ) : null;
-
-    const currentListId = quotes.map((q) => q.list_id)
-    const listId = currentListId[0] ?   currentListId[0] : (index +1)
+  
+    //debugger
+    //const currentListId = quotes.map((q) => q.list_id)
+    const listId = index + 1
 
     const addCard = this.props.addCard.bind(null, listId, cardText);
-    const handleCardText = this.props.handleCardText.bind(null, currentListId[0]);
-    const handleToggleForm = this.props.handleToggleForm.bind(null, currentListId[0]);
+    const handleCardText = this.props.handleCardText.bind(null, listId);
+    const handleToggleForm = this.props.handleToggleForm.bind(null, listId);
 
-    const form = (this.props.toggleForm == currentListId[0]) ? (
+    const form = (this.props.toggleForm == listId) ? (
       <form onSubmit={addCard}>
         <input type="text" value={cardText} onChange={handleCardText} />
         <input type="submit" value="Add Card" className='btn' />

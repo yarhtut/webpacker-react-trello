@@ -13,16 +13,17 @@ import Board from './board/board'
 
 document.addEventListener('DOMContentLoaded', () => {
   ReactDOM.render(
-    <App />,
+    <Trello />,
     document.body.appendChild(document.getElementById('board')),
   )
 })
 
-class App extends React.Component {
+class Trello extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
-      lists: {}
+      lists: {},
+      order: []
     }
   }
 
@@ -30,6 +31,13 @@ class App extends React.Component {
     fetch('/lists.json')
     .then(res => res.json())
     .then(res => this.setState({ lists: res }))
+
+     const binder = this
+     App.cable.subscriptions.create("ListsChannel", {
+       received: function(data) {
+        binder.setState({ lists:  JSON.parse(data.message), order: Object.keys(JSON.parse(data.message)) })
+       }
+     });
   }
 
   render() {
