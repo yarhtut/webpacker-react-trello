@@ -139,12 +139,13 @@ export default class QuoteItem extends React.PureComponent {
             contentLabel={quote.name}
           >
             <h2>{quote.name}</h2>
-            <button onClick={this.closeModal}>close</button>
-
+            <button className='close' onClick={this.closeModal}>X</button>
             <p>{quote.description}</p>
+
             <div className='progress-bar'>
-              <p>{this.state.progressTodo} <small> % </small></p>
-              <Line percent={this.state.progressTodo} strokeWidth="1" strokeColor="DodgerBlue" />
+              <h3>CheckList</h3>
+              <p>{this.state.progressTodo ? this.state.progressTodo : 0} <small> % </small></p>
+              <Line percent={this.state.progressTodo ? this.state.progressTodo : 0} strokeWidth="1" strokeColor="DodgerBlue" />
             </div>
 
             <div className='todo-app'>

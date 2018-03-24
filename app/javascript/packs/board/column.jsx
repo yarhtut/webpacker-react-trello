@@ -54,7 +54,7 @@ export default class Column extends Component {
       handleToggleForm,
       toggleForm
     } = this.props;
-  console.log(toggleForm)
+
     return (
       <Draggable draggableId={title} index={index}>
         {(provided: DraggableProvided, snapshot: DraggableStateSnapshot) => (

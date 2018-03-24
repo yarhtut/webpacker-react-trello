@@ -104,3 +104,19 @@ a.btn {
 .ReactModal__Overlay {
   background-color: rgba(0,0,0,0.65)!important;
 }
+
+.todo-list ul {
+  padding: 0
+}
+.todo-item {
+  list-style: none;
+}
+.close {
+  position: absolute;
+  right: 0;
+  top: 0;
+  margin: 2rem;
+  padding: .5rem;
+  border-radius: 30%;
+
+}
