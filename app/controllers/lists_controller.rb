@@ -51,7 +51,7 @@ class ListsController < ApplicationController
   private
   def broadcast
     list = List.all.sort_by{ |l| l.position }
-    ActionCable.server.broadcast 'list_channel', message: list.collect { |x| [  x.name,  x.cards ] }.to_h.to_json
+    ActionCable.server.broadcast 'list_channel', message: list.collect { |x| [ x.position, [  x.name,  x.cards ]] }.to_h.to_json
   end
 
   # Use callbacks to share common setup or constraints between actions.

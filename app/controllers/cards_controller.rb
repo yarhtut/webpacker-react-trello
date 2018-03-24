@@ -27,9 +27,10 @@ class CardsController < ApplicationController
   # POST /cards
   # POST /cards.json
   def create
-     #broadcast
-     @card = Card.new(card_params)
+     list_id = List.find_by_position(card_params['list_id']).id
+     @card = Card.new(list_id: list_id, name: card_params['name'])
      @card.save
+     broadcast if @card.save
     
   end
 
@@ -53,7 +54,7 @@ class CardsController < ApplicationController
   private
   def broadcast
     list = List.all.sort_by{ |l| l.position }
-    ActionCable.server.broadcast 'list_channel', message: list.collect { |x| [  x.name,  x.cards ] }.to_json
+    ActionCable.server.broadcast 'list_channel', message: list.collect { |x| [ x.position, [  x.name,  x.cards ]] }.to_h.to_json
   end
   # Use callbacks to share common setup or constraints between actions.
   def set_card

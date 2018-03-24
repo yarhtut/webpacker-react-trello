@@ -32,18 +32,18 @@ class Trello extends React.Component {
     .then(res => res.json())
     .then(res => this.setState({ lists: res }))
 
-     const binder = this
-     App.cable.subscriptions.create("ListsChannel", {
-       received: function(data) {
+    const binder = this
+    App.cable.subscriptions.create("ListsChannel", {
+      received: function(data) {
         binder.setState({ lists:  JSON.parse(data.message), order: Object.keys(JSON.parse(data.message)) })
-       }
-     });
+      }
+    });
   }
 
   render() {
     return (
       <Board lists={this.state.lists} />
-    )
+      )
   }
 }
 

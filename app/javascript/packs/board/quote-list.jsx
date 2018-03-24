@@ -50,7 +50,6 @@ class InnerQuoteList extends Component {
   }
 
   render() {
-    console.log(this.props.quotes)
     return (
       <div>
         {this.props.quotes.map((quote, index) => (
@@ -89,7 +88,7 @@ class InnerList extends Component {
     const addCard = this.props.addCard.bind(null, listId, cardText);
     const handleCardText = this.props.handleCardText.bind(null, listId);
     const handleToggleForm = this.props.handleToggleForm.bind(null, listId);
-
+    //debugger
     const form = (this.props.toggleForm == listId) ? (
       <form onSubmit={addCard}>
         <input type="text" value={cardText} onChange={handleCardText} />

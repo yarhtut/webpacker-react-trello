@@ -83,7 +83,6 @@ export default class Board extends Component {
   addCard(listId, card, e) {
     e.preventDefault();
     const token = document.querySelector(`meta[name='csrf-token']`).getAttribute('content');
-
     const data = { list_id: listId, name: card } 
 
     fetch(`/cards` , {
