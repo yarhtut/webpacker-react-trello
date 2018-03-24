@@ -40,7 +40,9 @@ export default class Board extends Component {
   componentWillMount() {
     fetch('/lists.json')
     .then(res => res.json())
-    .then(res => this.setState({ lists: res , order: Object.keys(res) }))
+    .then(res => {
+      this.setState({ lists: res , order: Object.keys(res) })
+    })
 
     injectGlobal` body { background: rgb(0, 121, 191); } `;
   }
@@ -149,6 +151,7 @@ export default class Board extends Component {
     const lists = this.state.lists;
     const order = this.state.order;
     const { containerHeight } = this.props;
+debugger
     const listForm = this.state.toggleListForm ? (
       <form onSubmit={this.newList}>
         <input type="text" value={this.state.listValue} onChange={this.handleListText} />
@@ -169,9 +172,9 @@ export default class Board extends Component {
               <Column
                 key={key}
                 index={index}
-                title={key}
-                quotes={lists[key]}
-                lists={lists}
+                title={lists[key][0]}
+                quotes={lists[key][1]}
+                lists={lists[1]}
                 autoFocusQuoteId={this.state.autoFocusQuoteId}
                 addCard={this.addCard}
                 cardText={this.state.cardText}
