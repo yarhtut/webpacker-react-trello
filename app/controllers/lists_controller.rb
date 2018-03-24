@@ -7,7 +7,7 @@ class ListsController < ApplicationController
   def index
     broadcast
     list = List.all.sort_by{ |l| l.position }
-    render json:  list.collect { |x| [ x.id, [ x.name, x.cards ]] }.to_h
+    render json:  list.collect { |x| [ x.position, [ x.name, x.cards ]] }.to_h
   end
 
   # GET /lists/1

@@ -26,7 +26,6 @@ const reorder = (
     return result;
   };
 
-
   const reorderCards = (
     list,
     startIndex,

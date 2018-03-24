@@ -20,6 +20,8 @@ export default class Board extends Component {
       toogleListForm: false
     }
 
+    this.onDragStart = this.onDragStart.bind(this);
+    this.onDragEnd = this.onDragEnd.bind(this);
     this.newList = this.newList.bind(this);
     this.addCard = this.addCard.bind(this);
     this.handleCardText = this.handleCardText.bind(this);
@@ -89,7 +91,7 @@ export default class Board extends Component {
     const token = document.querySelector(`meta[name='csrf-token']`).getAttribute('content');
 
     const data = { list_id: listId, name: card } 
-    debugger
+
     fetch(`/cards` , {
       body: JSON.stringify(data),
       method: 'POST',
@@ -106,13 +108,13 @@ export default class Board extends Component {
     })
   }
 
-  onDragStart = (initial) => {
+  onDragStart(initial) {
     this.setState({
       autoFocusQuoteId: null,
     });
   }
 
-  onDragEnd = (result) => {
+  onDragEnd(result) {
     // dropped nowhere
     if (!result.destination) {
       return;
@@ -120,6 +122,7 @@ export default class Board extends Component {
 
     const source = result.source;
     const destination = result.destination;
+
     // reordering column
     if (result.type === 'COLUMN') {
       const order = reorder(
@@ -151,7 +154,7 @@ export default class Board extends Component {
     const lists = this.state.lists;
     const order = this.state.order;
     const { containerHeight } = this.props;
-debugger
+
     const listForm = this.state.toggleListForm ? (
       <form onSubmit={this.newList}>
         <input type="text" value={this.state.listValue} onChange={this.handleListText} />
