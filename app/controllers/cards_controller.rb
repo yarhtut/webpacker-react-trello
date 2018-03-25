@@ -38,6 +38,7 @@ class CardsController < ApplicationController
   # PATCH/PUT /cards/1.json
   def update
     @card_position.update_attributes(position: card_params['position'])
+    broadcast
   end
 
   # DELETE /cards/1
@@ -54,7 +55,7 @@ class CardsController < ApplicationController
   private
   def broadcast
     list = List.all.sort_by{ |l| l.position }
-    ActionCable.server.broadcast 'list_channel', message: list.collect { |x| [ x.position, [  x.name,  x.cards ]] }.to_h.to_json
+    ActionCable.server.broadcast 'card_channel', message: list.collect { |x| [ x.position, [  x.name,  x.cards ]] }.to_h.to_json
   end
   # Use callbacks to share common setup or constraints between actions.
   def set_card

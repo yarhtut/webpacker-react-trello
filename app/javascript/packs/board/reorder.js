@@ -38,9 +38,7 @@ const reorder = (
       const updatePosition = endIndex + 1;
 
       const data = { position:  updatePosition  }
-
       const currentMoveCard = list.filter((l) => l.position == moveItem )
-      debugger
 
       fetch(`/cards/${currentMoveCard[0].id}` , {
         body: JSON.stringify(data),
@@ -58,12 +56,14 @@ const reorder = (
     export const reorderQuoteMap = ({
       quoteMap,
       source,
-      destination 
+      destination
     }) => {
-      
-      debugger
-      const current = [...quoteMap[source.droppableId]];
-      const next = [...quoteMap[destination.droppableId]];
+
+      const sourceDroppableId = source.droppableId.split('-')[1]
+      const destinationDroppableId = destination.droppableId.split('-')[1]
+      const current = [...quoteMap[sourceDroppableId]][1];
+      const next = [...quoteMap[destinationDroppableId]][1];
+
       const target = current[source.index];
       // moving to same list
       if (source.droppableId === destination.droppableId) {
@@ -76,13 +76,14 @@ const reorder = (
           ...quoteMap,
           [source.droppableId]: reordered,
         };
+        
         return {
           quoteMap: result,
           // not auto focusing in own list
           autoFocusQuoteId: null,
         };
       }
-      
+
       // moving to different list
       const listId = current[0].list_id;
       const sourceCard = current.filter((x) =>  x.position == (source.index + 1));
@@ -115,4 +116,4 @@ const reorder = (
       };
     };
 
-  export default reorder;
+    export default reorder;

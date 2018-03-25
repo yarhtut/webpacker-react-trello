@@ -122,6 +122,7 @@ export default class QuoteList extends Component {
       isDropDisabled,
       index,
       listId,
+      droppableTitle,
       listType,
       style,
       quotes,
@@ -136,7 +137,7 @@ export default class QuoteList extends Component {
 
     return (
       <Droppable
-        droppableId={listId}
+        droppableId={droppableTitle}
         type={listType}
         ignoreContainerClipping={ignoreContainerClipping}
         isDropDisabled={isDropDisabled}

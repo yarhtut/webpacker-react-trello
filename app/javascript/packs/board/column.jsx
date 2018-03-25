@@ -45,6 +45,7 @@ export default class Column extends Component {
   render() {
     const {
       title,
+      droppableTitle,
       quotes,
       index,
       addCard,
@@ -55,7 +56,7 @@ export default class Column extends Component {
     } = this.props;
 
     return (
-      <Draggable draggableId={title} index={index}>
+      <Draggable draggableId={droppableTitle} index={index}>
         {(provided: DraggableProvided, snapshot: DraggableStateSnapshot) => (
           <Wrapper>
             <Container
@@ -72,6 +73,7 @@ export default class Column extends Component {
               </Header>
               <QuoteList
                 listId={title}
+                droppableTitle={droppableTitle}
                 listType="QUOTE"
                 quotes={quotes}
                 autoFocusQuoteId={this.props.autoFocusQuoteId}

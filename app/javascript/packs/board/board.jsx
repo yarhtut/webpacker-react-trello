@@ -131,15 +131,13 @@ export default class Board extends Component {
       return;
     }
     
-    console.log(this.state.lists)
-    console.log(source)
-    console.log(destination)
     const data = reorderQuoteMap({
       quoteMap: this.state.lists,
       source,
       destination 
     });
 
+    console.log(data)
     //this.setState({
     //  lists: data.quoteMap,
     //  autoFocusQuoteId: data.autoFocusQuoteId,
@@ -172,6 +170,7 @@ export default class Board extends Component {
                 key={key}
                 index={index}
                 title={lists[key][0]}
+                droppableTitle={`column-${key}`}
                 quotes={lists[key][1]}
                 lists={lists[1]}
                 autoFocusQuoteId={this.state.autoFocusQuoteId}
