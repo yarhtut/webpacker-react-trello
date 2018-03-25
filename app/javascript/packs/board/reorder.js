@@ -40,6 +40,7 @@ const reorder = (
       const data = { position:  updatePosition  }
 
       const currentMoveCard = list.filter((l) => l.position == moveItem )
+      debugger
 
       fetch(`/cards/${currentMoveCard[0].id}` , {
         body: JSON.stringify(data),
@@ -57,8 +58,10 @@ const reorder = (
     export const reorderQuoteMap = ({
       quoteMap,
       source,
-      destination,
+      destination 
     }) => {
+      
+      debugger
       const current = [...quoteMap[source.droppableId]];
       const next = [...quoteMap[destination.droppableId]];
       const target = current[source.index];
@@ -79,7 +82,7 @@ const reorder = (
           autoFocusQuoteId: null,
         };
       }
-
+      
       // moving to different list
       const listId = current[0].list_id;
       const sourceCard = current.filter((x) =>  x.position == (source.index + 1));

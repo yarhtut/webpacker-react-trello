@@ -46,7 +46,6 @@ export default class Column extends Component {
     const {
       title,
       quotes,
-      lists,
       index,
       addCard,
       cardText,
@@ -73,10 +72,10 @@ export default class Column extends Component {
               </Header>
               <QuoteList
                 listId={title}
-                index={index}
                 listType="QUOTE"
                 quotes={quotes}
                 autoFocusQuoteId={this.props.autoFocusQuoteId}
+                index={index}
                 addCard={addCard}
                 cardText={cardText}
                 toggleForm={toggleForm}

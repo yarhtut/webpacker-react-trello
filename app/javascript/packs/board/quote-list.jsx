@@ -50,9 +50,11 @@ class InnerQuoteList extends Component {
   }
 
   render() {
+
     return (
       <div>
         {this.props.quotes.map((quote, index) => (
+
           <Draggable key={quote.id} draggableId={quote.id} index={index}>
             {(dragProvided: DraggableProvided, dragSnapshot: DraggableStateSnapshot) => (
               <div>

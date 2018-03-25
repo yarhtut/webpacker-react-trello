@@ -83,7 +83,7 @@ export default class Board extends Component {
   addCard(listId, card, e) {
     e.preventDefault();
     const token = document.querySelector(`meta[name='csrf-token']`).getAttribute('content');
-    const data = { list_id: listId, name: card } 
+    const data = { list_id: listId, name: card }
 
     fetch(`/cards` , {
       body: JSON.stringify(data),
@@ -130,17 +130,20 @@ export default class Board extends Component {
 
       return;
     }
-
+    
+    console.log(this.state.lists)
+    console.log(source)
+    console.log(destination)
     const data = reorderQuoteMap({
       quoteMap: this.state.lists,
       source,
-      destination,
+      destination 
     });
 
-    this.setState({
-      lists: data.quoteMap,
-      autoFocusQuoteId: data.autoFocusQuoteId,
-    });
+    //this.setState({
+    //  lists: data.quoteMap,
+    //  autoFocusQuoteId: data.autoFocusQuoteId,
+    //});
   }
 
   render() {
