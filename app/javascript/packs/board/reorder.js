@@ -33,22 +33,21 @@ const reorder = (
       const result = Array.from(list);
       const [removed] = result.splice(startIndex, 1);
       result.splice(endIndex, 0, removed);
+       const moveItem = startIndex + 1;
+       const updatePosition = endIndex + 1;
 
-      const moveItem = startIndex + 1;
-      const updatePosition = endIndex + 1;
+       const data = { position:  updatePosition  }
+       const currentMoveCard = list.filter((l) => l.position == moveItem )
 
-      const data = { position:  updatePosition  }
-      const currentMoveCard = list.filter((l) => l.position == moveItem )
-
-      fetch(`/cards/${currentMoveCard[0].id}` , {
-        body: JSON.stringify(data),
-        method: 'PATCH',
-        headers: {
-          'Content-type': 'application/json',
-          'X-CSRF-TOKEN': token
-        },
-        credentials: 'same-origin'
-      })
+       fetch(`/cards/${currentMoveCard[0].id}` , {
+         body: JSON.stringify(data),
+         method: 'PATCH',
+         headers: {
+           'Content-type': 'application/json',
+           'X-CSRF-TOKEN': token
+         },
+         credentials: 'same-origin'
+       })
 
       return result;
     };
@@ -63,20 +62,25 @@ const reorder = (
       const destinationDroppableId = destination.droppableId.split('-')[1]
       const current = [...quoteMap[sourceDroppableId]][1];
       const next = [...quoteMap[destinationDroppableId]][1];
+      const currentColumnName = current[1].name.split(' ')[0];
 
       const target = current[source.index];
       // moving to same list
-      if (source.droppableId === destination.droppableId) {
+      //
+      if (sourceDroppableId === destinationDroppableId) {
         const reordered = reorderCards(
           current,
           source.index,
           destination.index,
         );
+        
+        const cardReOrdered = [ currentColumnName, reordered ]
+
         const result = {
           ...quoteMap,
-          [source.droppableId]: reordered,
+          [sourceDroppableId]: cardReOrdered,
         };
-        
+
         return {
           quoteMap: result,
           // not auto focusing in own list
@@ -84,36 +88,38 @@ const reorder = (
         };
       }
 
-      // moving to different list
-      const listId = current[0].list_id;
-      const sourceCard = current.filter((x) =>  x.position == (source.index + 1));
-      const cardId = sourceCard[0].id;
-      const data = { source: source, destination: destination, listId: listId, cardId: cardId }
+      else {
+        // moving to different list
+        const listId = current[0].list_id;
+        const sourceCard = current.filter((x) =>  x.position == (source.index + 1));
+        const cardId = sourceCard[0].id;
+        const data = { source: source, destination: destination, listId: listId, cardId: cardId }
+debugger
+        fetch(`/cards/${cardId}` , {
+          body: JSON.stringify(data),
+          method: 'DELETE',
+          headers: {
+            'Content-type': 'application/json',
+            'X-CSRF-TOKEN': token
+          },
+          credentials: 'same-origin'
+        })
+        // remove from original
+        current.splice(source.index, 1);
+        // insert into next
+        next.splice(destination.index, 0, target);
 
-      fetch(`/cards/${cardId}` , {
-        body: JSON.stringify(data),
-        method: 'DELETE',
-        headers: {
-          'Content-type': 'application/json',
-          'X-CSRF-TOKEN': token
-        },
-        credentials: 'same-origin'
-      })
-      // remove from original
-      current.splice(source.index, 1);
-      // insert into next
-      next.splice(destination.index, 0, target);
+        const result = {
+          ...quoteMap,
+          [source.droppableId]: current,
+          [destination.droppableId]: next,
+        };
 
-      const result = {
-        ...quoteMap,
-        [source.droppableId]: current,
-        [destination.droppableId]: next,
-      };
-
-      return {
-        quoteMap: result,
-        autoFocusQuoteId: target.id,
-      };
+        return {
+          quoteMap: result,
+          autoFocusQuoteId: target.id,
+        };
+      }
     };
 
     export default reorder;
