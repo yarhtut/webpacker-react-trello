@@ -38,6 +38,7 @@ class ListsController < ApplicationController
   # PATCH/PUT /lists/1.json
   def update
     @list_position.update_attributes(position: list_params['position'])
+    broadcast
   end
 
   # DELETE /lists/1
