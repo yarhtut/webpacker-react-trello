@@ -46,10 +46,11 @@ class CardsController < ApplicationController
   def destroy
     new_name = @card.name
     new_position = params[:destination][:index] + 1
-    new_list_id = List.find_by(name: params[:destination][:droppableId]).id
+    new_list_id = List.find_by(name: params[:destinationColumnName]).id
     @card.destroy
     @new_card = Card.new(list_id: new_list_id, name: new_name,  position: new_position)
     @new_card.save
+    broadcast if @new_card.save
   end
 
   private
