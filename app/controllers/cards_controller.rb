@@ -1,5 +1,5 @@
 class CardsController < ApplicationController
-  before_action :set_card, only: [:show, :edit, :destroy]
+  before_action :set_card, only: [ :edit, :destroy]
   before_action :set_card_by_position, only: [:update]
 
   # GET /cards
@@ -46,7 +46,8 @@ class CardsController < ApplicationController
   def destroy
     new_name = @card.name
     new_position = params[:destination][:index] + 1
-    new_list_id = List.find_by(name: params[:destinationColumnName]).id
+    new_list_id = List.find_by_name(params[:destinationColumnName]).id
+
     @card.destroy
     @new_card = Card.new(list_id: new_list_id, name: new_name,  position: new_position)
     @new_card.save
@@ -69,6 +70,6 @@ class CardsController < ApplicationController
 
   # Never trust parameters from the scary internet, only allow the white list through.
   def card_params
-    params.require(:card).permit(:list_id, :name, :position)
+    params.require(:card).permit(:list_id, :name, :position, :destination, :destinationColumnName, :listId, :cardId)
   end
 end

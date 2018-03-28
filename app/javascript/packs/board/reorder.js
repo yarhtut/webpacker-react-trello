@@ -1,4 +1,3 @@
-const token = document.querySelector(`meta[name='csrf-token']`).getAttribute('content');
 
 const reorder = (
   list,
@@ -13,6 +12,7 @@ const reorder = (
 
     const data = { position:  updatePosition }
 
+    const token = document.querySelector(`meta[name='csrf-token']`).getAttribute('content');
     fetch(`/lists/${moveItem}` , {
       body: JSON.stringify(data),
       method: 'PATCH',
@@ -39,6 +39,7 @@ const reorder = (
       const data = { position:  updatePosition  }
       const currentMoveCard = list.filter((l) => l.position == moveItem )
 
+      const token = document.querySelector(`meta[name='csrf-token']`).getAttribute('content');
       fetch(`/cards/${currentMoveCard[0].id}` , {
         body: JSON.stringify(data),
         method: 'PATCH',
@@ -93,10 +94,12 @@ const reorder = (
         const listId = current[0].list_id;
         const sourceCard = current.filter((x) =>  x.position == (source.index + 1));
         const cardId = sourceCard[0].id;
-        const destinationColumnName = next[0].name.split(' ')[0];
+        const destinationColumnName = next[0].name.split('-')[0];
 
         const data = { source: source, destination: destination, destinationColumnName: destinationColumnName, listId: listId, cardId: cardId }
 
+        const token = document.querySelector(`meta[name='csrf-token']`).getAttribute('content');
+        console.log(data)
         fetch(`/cards/${cardId}` , {
           body: JSON.stringify(data),
           method: 'DELETE',
