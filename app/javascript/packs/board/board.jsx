@@ -27,12 +27,12 @@ export default class Board extends Component {
     this.handleToggleForm = this.handleToggleForm.bind(this);
     this.handleToggleListForm = this.handleToggleListForm.bind(this);
 
-    //const binder = this
-    //  App.cable.subscriptions.create("ListsChannel", {
-    //    received: function(data) {
-    //      binder.setState({ lists:  JSON.parse(data.message), order: Object.keys(JSON.parse(data.message)) })
-    //    }
-    //  });
+    const binder = this
+      App.cable.subscriptions.create("ListsChannel", {
+        received: function(data) {
+          binder.setState({ lists:  JSON.parse(data.message), order: Object.keys(JSON.parse(data.message)) })
+        }
+      });
   }
 
   //boardRef: ?HTMLElement

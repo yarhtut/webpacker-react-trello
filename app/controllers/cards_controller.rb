@@ -47,13 +47,14 @@ class CardsController < ApplicationController
     new_position = params[:destination][:index] + 1
     new_list_id = List.find_by(name: params[:destination][:droppableId]).id
 
-    @new_card = @card.update_attributes(list_id: new_list_id, position: new_position)
+    @card.update_attributes(list_id: new_list_id, position: new_position)
+    broadcast
   end
 
   private
   def broadcast
     list = List.all.sort_by{ |l| l.position }
-    ActionCable.server.broadcast 'list_channel', message: list.collect { |x| [  x.name,  x.cards ] }.to_json
+    ActionCable.server.broadcast 'list_channel', message: list.collect { |x| [  x.name,  x.cards ] }.to_h.to_json
   end
   # Use callbacks to share common setup or constraints between actions.
   def set_card

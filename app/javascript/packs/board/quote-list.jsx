@@ -77,14 +77,6 @@ class InnerList extends Component {
 
   render() {
     const { index,title, quotes, dropProvided, autoFocusQuoteId, cardText } = this.props;
-    // const title = this.props.title ? (
-    //   <Title>{this.props.title}</Title>
-    // ) : null;
-
-  console.log(this.props.title) 
-  //const currentListId = quotes.map((q) => q.list_id)
-  // const listId = currentListId[0] ?   currentListId[0] : (index +1)
-
     const addCard = this.props.addCard.bind(null, title, cardText);
     const handleCardText = this.props.handleCardText.bind(null, title);
     const handleToggleForm = this.props.handleToggleForm.bind(null, title);

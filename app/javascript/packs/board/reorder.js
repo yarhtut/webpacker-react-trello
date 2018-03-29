@@ -86,18 +86,19 @@ const reorder = (
       const sourceCard = current.filter((x) =>  x.position == (source.index + 1));
       const cardId = sourceCard[0].id;
       const data = { source: source, destination: destination, listId: listId, cardId: cardId }
-debugger
-      target.list_id = listId
 
-      //fetch(`/cards/${cardId}` , {
-      //  body: JSON.stringify(data),
-      //  method: 'DELETE',
-      //  headers: {
-      //    'Content-type': 'application/json',
-      //    'X-CSRF-TOKEN': token
-      //  },
-      //  credentials: 'same-origin'
-      //})
+      //target.list_id = listId
+
+      fetch(`/cards/${cardId}` , {
+        body: JSON.stringify(data),
+        method: 'DELETE',
+        headers: {
+          'Content-type': 'application/json',
+          'X-CSRF-TOKEN': token
+        },
+        credentials: 'same-origin'
+      })
+
       // remove from original
       current.splice(source.index, 1);
       // insert into next
@@ -108,7 +109,7 @@ debugger
         [source.droppableId]: current,
         [destination.droppableId]: next,
       };
-      debugger
+
       return {
         quoteMap: result,
         autoFocusQuoteId: target.id,
