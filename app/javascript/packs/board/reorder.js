@@ -1,3 +1,4 @@
+const token = document.querySelector(`meta[name='csrf-token']`).getAttribute('content');
 
 const reorder = (
   list,
@@ -12,7 +13,7 @@ const reorder = (
 
     const data = { position:  updatePosition }
 
-    const token = document.querySelector(`meta[name='csrf-token']`).getAttribute('content');
+
     fetch(`/lists/${moveItem}` , {
       body: JSON.stringify(data),
       method: 'PATCH',
@@ -39,7 +40,7 @@ const reorder = (
       const data = { position:  updatePosition  }
       const currentMoveCard = list.filter((l) => l.position == moveItem )
 
-      const token = document.querySelector(`meta[name='csrf-token']`).getAttribute('content');
+
       fetch(`/cards/${currentMoveCard[0].id}` , {
         body: JSON.stringify(data),
         method: 'PATCH',
@@ -63,11 +64,11 @@ const reorder = (
       const destinationDroppableId = destination.droppableId.split('-')[1]
       const current = [...quoteMap[sourceDroppableId]][1];
       const next = [...quoteMap[destinationDroppableId]][1];
-      const currentColumnName = current[1].name.split(' ')[0];
+      const currentColumnName = quoteMap[sourceDroppableId][0];
+      const nextColumnName = quoteMap[destinationDroppableId][0];
 
       const target = current[source.index];
       // moving to same list
-      //
       if (sourceDroppableId === destinationDroppableId) {
         const reordered = reorderCards(
           current,
@@ -89,42 +90,39 @@ const reorder = (
         };
       }
 
-      else {
-        // moving to different list
-        const listId = current[0].list_id;
-        const sourceCard = current.filter((x) =>  x.position == (source.index + 1));
-        const cardId = sourceCard[0].id;
-        const destinationColumnName = next[0].name.split('-')[0];
+      // moving to different list
+      const cardId = target.id;
 
-        const data = { source: source, destination: destination, destinationColumnName: destinationColumnName, listId: listId, cardId: cardId }
+      target.list_id = parseInt(destinationDroppableId);
 
-        const token = document.querySelector(`meta[name='csrf-token']`).getAttribute('content');
-        console.log(data)
-        fetch(`/cards/${cardId}` , {
-          body: JSON.stringify(data),
-          method: 'DELETE',
-          headers: {
-            'Content-type': 'application/json',
-            'X-CSRF-TOKEN': token
-          },
-          credentials: 'same-origin'
-        })
-        // remove from original
-        current.splice(source.index, 1);
-        // insert into next
-        next.splice(destination.index, 0, target);
+      const data = { source: source, destination: destination, destinationColumnId: destinationDroppableId, cardId: cardId }
+      fetch(`/cards/${cardId}` , {
+        body: JSON.stringify(data),
+        method: 'DELETE',
+        headers: {
+          'Content-type': 'application/json',
+          'X-CSRF-TOKEN': token
+        },
+        credentials: 'same-origin'
+      })
+      // remove from original
+      current.splice(source.index, 1);
+      // insert into next
+      next.splice(destination.index, 0, target);
 
-        const result = {
-          ...quoteMap,
-          [source.droppableId]: current,
-          [destination.droppableId]: next,
-        };
+      const currentColumn = [ currentColumnName, current ]
+      const nextColumn = [ nextColumnName, next ]
 
-        return {
-          quoteMap: result,
-          autoFocusQuoteId: target.id,
-        };
-      }
+      const result = {
+        ...quoteMap,
+        [sourceDroppableId]: currentColumn,
+        [destinationDroppableId]: nextColumn
+      };
+
+      return {
+        quoteMap: result,
+        autoFocusQuoteId: null,
+      };
     };
 
     export default reorder;

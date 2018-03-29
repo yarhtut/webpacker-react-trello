@@ -44,14 +44,15 @@ class CardsController < ApplicationController
   # DELETE /cards/1
   # DELETE /cards/1.json
   def destroy
-    new_name = @card.name
+    #new_name = @card.name
     new_position = params[:destination][:index] + 1
-    new_list_id = List.find_by_name(params[:destinationColumnName]).id
+    #new_list_id = List.find_by_name(params[:destinationColumnId]).id
+    @card.update_attributes(list_id: params[:destinationColumnId], position: new_position)
 
-    @card.destroy
-    @new_card = Card.new(list_id: new_list_id, name: new_name,  position: new_position)
-    @new_card.save
-    broadcast if @new_card.save
+    #@card.destroy
+    #@new_card = Card.new(list_id: new_list_id, name: new_name,  position: new_position)
+    #@new_card.save
+    broadcast
   end
 
   private

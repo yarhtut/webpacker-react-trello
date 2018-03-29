@@ -34,11 +34,11 @@ export default class Board extends Component {
     //     binder.setState({ lists:  JSON.parse(data.message), order: Object.keys(JSON.parse(data.message)) })
     //   }
     // });
-    App.cable.subscriptions.create("ListsChannel", {
-      received: function(data) {
-        binder.setState({ lists:  JSON.parse(data.message), order: Object.keys(JSON.parse(data.message)) })
-      }
-    });
+    // App.cable.subscriptions.create("ListsChannel", {
+    //   received: function(data) {
+    //     binder.setState({ lists:  JSON.parse(data.message), order: Object.keys(JSON.parse(data.message)) })
+    //   }
+    // });
   }
 
   //boardRef: ?HTMLElement
@@ -140,7 +140,7 @@ export default class Board extends Component {
 
       return;
     }
-    
+
     const data = reorderQuoteMap({
       quoteMap: this.state.lists,
       source,
@@ -149,6 +149,7 @@ export default class Board extends Component {
 
     this.setState({
       lists: data.quoteMap,
+      order: Object.keys(data.quoteMap),
       autoFocusQuoteId: data.autoFocusQuoteId,
     });
   }
