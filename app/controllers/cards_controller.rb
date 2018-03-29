@@ -27,9 +27,10 @@ class CardsController < ApplicationController
   # POST /cards
   # POST /cards.json
   def create
-     #broadcast
-     @card = Card.new(card_params)
-     @card.save
+    list_id = List.find_by(name: params[:list_name]).id
+    card = Card.new(list_id: list_id, name: params[:name])
+    card.save
+    broadcast if card.save
     
   end
 
@@ -37,17 +38,16 @@ class CardsController < ApplicationController
   # PATCH/PUT /cards/1.json
   def update
     @card_position.update_attributes(position: card_params['position'])
+    broadcast
   end
 
   # DELETE /cards/1
   # DELETE /cards/1.json
   def destroy
-    new_name = @card.name
     new_position = params[:destination][:index] + 1
     new_list_id = List.find_by(name: params[:destination][:droppableId]).id
-    @card.destroy
-    @new_card = Card.new(list_id: new_list_id, name: new_name,  position: new_position)
-    @new_card.save
+
+    @new_card = @card.update_attributes(list_id: new_list_id, position: new_position)
   end
 
   private
@@ -66,6 +66,6 @@ class CardsController < ApplicationController
 
   # Never trust parameters from the scary internet, only allow the white list through.
   def card_params
-    params.require(:card).permit(:list_id, :name, :position)
+    params.require(:card).permit(:list_id, :list_name, :name, :position)
   end
 end

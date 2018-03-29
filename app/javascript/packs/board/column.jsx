@@ -73,6 +73,7 @@ export default class Column extends Component {
               </Header>
               <QuoteList
                 listId={title}
+                title={title}
                 index={index}
                 listType="QUOTE"
                 quotes={quotes}

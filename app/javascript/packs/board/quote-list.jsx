@@ -76,19 +76,21 @@ class InnerQuoteList extends Component {
 class InnerList extends Component {
 
   render() {
-    const { index, quotes, dropProvided, autoFocusQuoteId, cardText } = this.props;
-    const title = this.props.title ? (
-      <Title>{this.props.title}</Title>
-    ) : null;
+    const { index,title, quotes, dropProvided, autoFocusQuoteId, cardText } = this.props;
+    // const title = this.props.title ? (
+    //   <Title>{this.props.title}</Title>
+    // ) : null;
 
-    const currentListId = quotes.map((q) => q.list_id)
-    const listId = currentListId[0] ?   currentListId[0] : (index +1)
+  console.log(this.props.title) 
+  //const currentListId = quotes.map((q) => q.list_id)
+  // const listId = currentListId[0] ?   currentListId[0] : (index +1)
 
-    const addCard = this.props.addCard.bind(null, listId, cardText);
-    const handleCardText = this.props.handleCardText.bind(null, currentListId[0]);
-    const handleToggleForm = this.props.handleToggleForm.bind(null, currentListId[0]);
+    const addCard = this.props.addCard.bind(null, title, cardText);
+    const handleCardText = this.props.handleCardText.bind(null, title);
+    const handleToggleForm = this.props.handleToggleForm.bind(null, title);
 
-    const form = (this.props.toggleForm == currentListId[0]) ? (
+    console.log(this.props.toggleForm) 
+    const form = (this.props.toggleForm == title) ? (
       <form onSubmit={addCard}>
         <input type="text" value={cardText} onChange={handleCardText} />
         <input type="submit" value="Add Card" className='btn' />
@@ -97,7 +99,6 @@ class InnerList extends Component {
 
     return (
       <Container>
-        {title}
         <DropZone innerRef={dropProvided.innerRef}>
           <InnerQuoteList
             quotes={quotes}

@@ -28,14 +28,15 @@ class ListsController < ApplicationController
   # POST /lists.json
   def create
     @list = List.new(list_params)
-    broadcast
     @list.save
+    broadcast
   end
 
   # PATCH/PUT /lists/1
   # PATCH/PUT /lists/1.json
   def update
     @list_position.update_attributes(position: list_params['position'])
+    broadcast
   end
 
   # DELETE /lists/1

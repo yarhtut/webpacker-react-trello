@@ -27,13 +27,12 @@ export default class Board extends Component {
     this.handleToggleForm = this.handleToggleForm.bind(this);
     this.handleToggleListForm = this.handleToggleListForm.bind(this);
 
-    // const binder = this
-    // App.cable.subscriptions.create("list_channel", {
-    //   received: function(data) {
-    //     console.log(data)
-    //     binder.setState({ lists:  JSON.parse(data.message), order: Object.keys(JSON.parse(data.message)) })
-    //   }
-    // });
+    //const binder = this
+    //  App.cable.subscriptions.create("ListsChannel", {
+    //    received: function(data) {
+    //      binder.setState({ lists:  JSON.parse(data.message), order: Object.keys(JSON.parse(data.message)) })
+    //    }
+    //  });
   }
 
   //boardRef: ?HTMLElement
@@ -58,8 +57,8 @@ export default class Board extends Component {
     this.setState({listValue: e.target.value});
   }
 
-  handleToggleForm(listId, e) {
-    this.setState({ toggleForm: listId, cardText: '' });
+  handleToggleForm(title, e) {
+    this.setState({ toggleForm: title, cardText: '' });
   }
 
   newList(e) {
@@ -83,12 +82,11 @@ export default class Board extends Component {
     })
   }
 
-  addCard(listId, card, e) {
+  addCard(listTitle, cardText, e) {
     e.preventDefault();
     const token = document.querySelector(`meta[name='csrf-token']`).getAttribute('content');
 
-    const data = { list_id: listId, name: card } 
-    debugger
+    const data = { list_name: listTitle, name: cardText } 
     fetch(`/cards` , {
       body: JSON.stringify(data),
       method: 'POST',
@@ -99,7 +97,7 @@ export default class Board extends Component {
       credentials: 'same-origin'
     })
     .then(() => {
-      fetch('/lists.json')
+     fetch('/lists.json')
       .then(res => res.json())
       .then(res => this.setState({ lists: res , order: Object.keys(res), toggleForm: null, cardText: '' }))
     })
