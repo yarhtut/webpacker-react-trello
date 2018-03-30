@@ -38,7 +38,15 @@ export default class QuoteItem extends React.PureComponent {
   }
 
   openModal(storyId) {
-    fetch(`/cards/${storyId}.json`)
+    const token = document.querySelector(`meta[name='csrf-token']`).getAttribute('content');
+    fetch(`/cards/${storyId}.json`, {
+      headers: {
+        'X-Requested-With': 'XMLHttpRequest',
+        'Content-type': 'application/json',
+        'X-CSRF-TOKEN': token
+      },
+      credentials: 'same-origin'
+    })
     .then(res => res.json())
     .then(res => {
       let totalChecked = res.filter((c) => c.checked == true).length;
@@ -64,13 +72,21 @@ export default class QuoteItem extends React.PureComponent {
       body: JSON.stringify(data),
       method: 'PATCH',
       headers: {
+        'X-Requested-With': 'XMLHttpRequest',
         'Content-type': 'application/json',
         'X-CSRF-TOKEN': token
       },
       credentials: 'same-origin'
     })
     .then(() => {
-      fetch(`/cards/${storyId}.json`)
+      fetch(`/cards/${storyId}.json`, {
+      headers: {
+        'X-Requested-With': 'XMLHttpRequest',
+        'Content-type': 'application/json',
+        'X-CSRF-TOKEN': token
+      },
+      credentials: 'same-origin'
+      })
       .then(res => res.json())
       .then(res => {
         let totalChecked = res.filter((c) => c.checked == true).length;
@@ -93,13 +109,21 @@ export default class QuoteItem extends React.PureComponent {
       body: JSON.stringify(data),
       method: 'POST',
       headers: {
+        'X-Requested-With': 'XMLHttpRequest',
         'Content-type': 'application/json',
         'X-CSRF-TOKEN': token
       },
       credentials: 'same-origin'
     })
     .then(() => {
-      fetch(`/cards/${storyId}.json`)
+      fetch(`/cards/${storyId}.json`, {
+      headers: {
+        'X-Requested-With': 'XMLHttpRequest',
+        'Content-type': 'application/json',
+        'X-CSRF-TOKEN': token
+      },
+      credentials: 'same-origin'
+      })
       .then(res => res.json())
       .then(res => {
         let totalChecked = res.filter((c) => c.checked == true).length;
@@ -165,21 +189,21 @@ export default class QuoteItem extends React.PureComponent {
 
   const customStyles = {
     content : {
-      top                   : '50%',
+      top                   : '30%',
       left                  : '50%',
       right                 : 'auto',
       bottom                : 'auto',
       marginRight           : '-50%',
       transform             : 'translate(-50%, -50%)',
       width                 : '780px',
-      minHeight            : '500px'
-
+      minHeight            : '600px',
+      background           : '#e2e4e6'
     }
   };
 
   const Container = styled.div`
-  border-radius: ${borderRadius}px;
-  border: 1px solid grey;
+  border-radius: 3px;
+  border-bottom: 1px solid #cccccc;
   background-color: ${({ isDragging }) => (isDragging ? colors.green : colors.white)};
 
   box-shadow: ${({ isDragging }) => (isDragging ? `2px 2px 1px ${colors.shadow}` : 'none')};

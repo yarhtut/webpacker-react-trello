@@ -6,7 +6,7 @@ class ListsController < ApplicationController
   # GET /lists.json
   def index
     list = List.all.sort_by{ |l| l.position }
-    render json:  list.collect { |x| [  x.name,  x.cards ] }.to_h
+    render json:  list.map { |x| [  x.name,  x.cards ] }.concat.to_h
   end
 
   # GET /lists/1
@@ -51,7 +51,7 @@ class ListsController < ApplicationController
   private
   def broadcast
     list = List.all.sort_by{ |l| l.position }
-    ActionCable.server.broadcast 'list_channel', message: list.collect { |x| [  x.name,  x.cards ] }.to_h.to_json
+    ActionCable.server.broadcast 'list_channel', message: list.map { |x| [  x.name,  x.cards ] }.concat.to_h.to_json
   end
 
   # Use callbacks to share common setup or constraints between actions.
