@@ -58,11 +58,10 @@ export default class Board extends Component {
   }
 
   handleToggleListForm() {
-    e.preventDefault();
     this.setState({toggleListForm: true});
   }
 
-  handleListText( e) {
+  handleListText(e) {
     e.preventDefault();
     this.setState({listValue: e.target.value});
   }
