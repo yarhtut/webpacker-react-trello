@@ -16,10 +16,12 @@ export default class QuoteItem extends React.PureComponent {
       modalIsOpen: false,
       todos: [],
       currentTodo: '',
-      progressTodo: 0
+      progressTodo: 0,
+      toggleTodoTextBox: false
     }
 
     this.openModal = this.openModal.bind(this);
+    this.openTodoTextBox = this.openTodoTextBox.bind(this);
     this.afterOpenModal = this.afterOpenModal.bind(this);
     this.closeModal = this.closeModal.bind(this);
     this.handleToggle = this.handleToggle.bind(this);
@@ -37,6 +39,11 @@ export default class QuoteItem extends React.PureComponent {
     node.focus();
   }
 
+  openTodoTextBox(e) {
+    e.preventDefault();
+    this.setState({ toggleTodoTextBox: true })
+  }
+
   openModal(storyId) {
     const token = document.querySelector(`meta[name='csrf-token']`).getAttribute('content');
     fetch(`/cards/${storyId}.json`, {
@@ -50,7 +57,11 @@ export default class QuoteItem extends React.PureComponent {
     .then(res => res.json())
     .then(res => {
       let totalChecked = res.filter((c) => c.checked == true).length;
-      this.setState({ todos: res , modalIsOpen: true, progressTodo: (Math.round(totalChecked / res.length * 100)) })
+      this.setState({
+        todos: res,
+        modalIsOpen: true,
+        progressTodo: (Math.round(totalChecked / res.length * 100))
+      })
     })
   }
 
@@ -80,12 +91,12 @@ export default class QuoteItem extends React.PureComponent {
     })
     .then(() => {
       fetch(`/cards/${storyId}.json`, {
-      headers: {
-        'X-Requested-With': 'XMLHttpRequest',
-        'Content-type': 'application/json',
-        'X-CSRF-TOKEN': token
-      },
-      credentials: 'same-origin'
+        headers: {
+          'X-Requested-With': 'XMLHttpRequest',
+          'Content-type': 'application/json',
+          'X-CSRF-TOKEN': token
+        },
+        credentials: 'same-origin'
       })
       .then(res => res.json())
       .then(res => {
@@ -117,74 +128,78 @@ export default class QuoteItem extends React.PureComponent {
     })
     .then(() => {
       fetch(`/cards/${storyId}.json`, {
-      headers: {
-        'X-Requested-With': 'XMLHttpRequest',
-        'Content-type': 'application/json',
-        'X-CSRF-TOKEN': token
-      },
-      credentials: 'same-origin'
+        headers: {
+          'X-Requested-With': 'XMLHttpRequest',
+          'Content-type': 'application/json',
+          'X-CSRF-TOKEN': token
+        },
+        credentials: 'same-origin'
       })
       .then(res => res.json())
       .then(res => {
         let totalChecked = res.filter((c) => c.checked == true).length;
         this.setState({ todos: res , errorMessage: '', currentTodo: '', progressTodo: (Math.round(totalChecked / res.length * 100)) })
       })
-      })
-    }
+    })
+  }
 
-    handleEmptySubmit(storyId, e) {
-      e.preventDefault();
-      this.setState({ errorMessage: 'Please suply a new todo name' });
-    }
+  handleEmptySubmit(storyId, e) {
+    e.preventDefault();
+    this.setState({ errorMessage: 'Please suply a new todo name' });
+  }
 
-    render() {
-      const { quote, isDragging, provided } = this.props;
-      const submitHandler = this.state.currentTodo ? this.handleSubmit.bind(this, quote.id) : this.handleEmptySubmit.bind(this, quote.id);
-      return (
-        <div>
-          <Container
-            isDragging={isDragging}
-            innerRef={provided.innerRef}
-            {...provided.draggableProps}
-            {...provided.dragHandleProps}
-            onClick={this.openModal.bind(this, quote.id)}
-          >
-            <Content>
-              <BlockQuote>{quote.name}</BlockQuote>
-              <QuoteId>(id: {quote.id})</QuoteId>
-            </Content>
-          </Container>
+  render() {
+    const { quote, isDragging, provided } = this.props;
+    const submitHandler = this.state.currentTodo ? this.handleSubmit.bind(this, quote.id) : this.handleEmptySubmit.bind(this, quote.id);
 
-          <Modal
-            isOpen={this.state.modalIsOpen}
-            onAfterOpen={this.afterOpenModal}
-            onRequestClose={this.closeModal}
-            style={customStyles}
-            contentLabel={quote.name}
-          >
-            <h2>{quote.name}</h2>
-            <button onClick={this.closeModal}>close</button>
+    const todoForm = this.state.toggleTodoTextBox ? (
+    <TodoForm currentTodo={this.state.currentTodo}
+      handleOnChange={this.handleOnChange}
+      handleSubmit={submitHandler}
+    />
+    ) : <a onClick={this.openTodoTextBox}>Add checklist...</a>
+    return (
+      <div>
+        <Container
+          isDragging={isDragging}
+          innerRef={provided.innerRef}
+          {...provided.draggableProps}
+          {...provided.dragHandleProps}
+          onClick={this.openModal.bind(this, quote.id)}
+        >
+          <Content>
+            <BlockQuote>{quote.name}</BlockQuote>
+            <QuoteId>(id: {quote.id})</QuoteId>
+          </Content>
+        </Container>
 
-            <p>{quote.description}</p>
-            <div className='progress-bar'>
-              <p>{this.state.progressTodo} <small> % </small></p>
-              <Line percent={this.state.progressTodo} strokeWidth="1" strokeColor="DodgerBlue" />
+        <Modal
+          isOpen={this.state.modalIsOpen}
+          onAfterOpen={this.afterOpenModal}
+          onRequestClose={this.closeModal}
+          style={customStyles}
+          contentLabel={quote.name}
+        >
+          <h2>{quote.name}</h2>
+          <button onClick={this.closeModal}>close</button>
+
+          <p>{quote.description}</p>
+          <div className='progress-bar'>
+            <p>{this.state.progressTodo} <small> % </small></p>
+            <Line percent={this.state.progressTodo} strokeWidth="1" strokeColor="DodgerBlue" />
+          </div>
+
+          <div className='todo-app'>
+            { this.state.errorMessage && <span className='error'> {this.state.errorMessage}</span> }
+            { todoForm }
+            <div className='todo-list'>
+              <TodoList storyId={quote.id} todos={this.state.todos} handleToggle={this.handleToggle} />
             </div>
-
-            <div className='todo-app'>
-              { this.state.errorMessage && <span className='error'> {this.state.errorMessage}</span> }
-              <TodoForm currentTodo={this.state.currentTodo}
-                handleOnChange={this.handleOnChange}
-                handleSubmit={submitHandler}
-              />
-              <div className='todo-list'>
-                <TodoList storyId={quote.id} todos={this.state.todos} handleToggle={this.handleToggle} />
-              </div>
-            </div>
-          </Modal>
-        </div>
-      );
-    }
+          </div>
+        </Modal>
+      </div>
+    );
+  }
   }
 
   const customStyles = {
@@ -196,81 +211,81 @@ export default class QuoteItem extends React.PureComponent {
       marginRight           : '-50%',
       transform             : 'translate(-50%, -50%)',
       width                 : '780px',
-      minHeight            : '600px',
-      background           : '#e2e4e6'
+      minHeight             : '600px',
+      background            : '#e2e4e6'
     }
-  };
+    };
 
-  const Container = styled.div`
-  border-radius: 3px;
-  border-bottom: 1px solid #cccccc;
-  background-color: ${({ isDragging }) => (isDragging ? colors.green : colors.white)};
+    const Container = styled.div`
+    border-radius: 3px;
+    border-bottom: 1px solid #cccccc;
+    background-color: ${({ isDragging }) => (isDragging ? colors.green : colors.white)};
 
-  box-shadow: ${({ isDragging }) => (isDragging ? `2px 2px 1px ${colors.shadow}` : 'none')};
-  padding: ${grid}px;
-  min-height: 40px;
-  margin-bottom: ${grid}px;
-  user-select: none;
-  transition: background-color 0.1s ease;
+    box-shadow: ${({ isDragging }) => (isDragging ? `2px 2px 1px ${colors.shadow}` : 'none')};
+    padding: ${grid}px;
+    min-height: 40px;
+    margin-bottom: ${grid}px;
+    user-select: none;
+    transition: background-color 0.1s ease;
 
-  color: ${colors.black};
+    color: ${colors.black};
 
-  &:hover {
-    background-color: ${colors.blue.lighter};
-    text-decoration: none;
-  }
-  &:focus {
-    outline: 2px solid ${colors.purple};
-    box-shadow: none;
-  }
+    &:hover {
+      background-color: ${colors.blue.lighter};
+      text-decoration: none;
+    }
+    &:focus {
+      outline: 2px solid ${colors.purple};
+      box-shadow: none;
+    }
 
-  display: flex;
-  align-items: center;
-  `;
+    display: flex;
+    align-items: center;
+    `;
 
-  const Avatar = styled.img`
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  margin-right: ${grid}px;
-  flex-shrink: 0;
-  flex-grow: 0;
-  `;
+    const Avatar = styled.img`
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    margin-right: ${grid}px;
+    flex-shrink: 0;
+    flex-grow: 0;
+    `;
 
-  const Content = styled.div`
-  flex-grow: 1;
-  flex-basis: 100%
+    const Content = styled.div`
+    flex-grow: 1;
+    flex-basis: 100%
 
-  display: flex;
-  flex-direction: column;
-  `;
+    display: flex;
+    flex-direction: column;
+    `;
 
-  const BlockQuote = styled.div`
-  `;
+    const BlockQuote = styled.div`
+    `;
 
-  const Footer = styled.div`
-  display: flex;
-  margin-top: ${grid}px;
-  `;
+    const Footer = styled.div`
+    display: flex;
+    margin-top: ${grid}px;
+    `;
 
-  const QuoteId = styled.span`
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  margin-right: ${grid}px;
-  flex-shrink: 0;
-  flex-grow: 0;
-  `;
+    const QuoteId = styled.span`
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    margin-right: ${grid}px;
+    flex-shrink: 0;
+    flex-grow: 0;
+    `;
 
-  const Attribution = styled.small`
-  margin: 0;
-  margin-left: ${grid}px;
-  text-align: right;
-  flex-grow: 1;
-  `;
+    const Attribution = styled.small`
+    margin: 0;
+    margin-left: ${grid}px;
+    text-align: right;
+    flex-grow: 1;
+    `;
 
-  //        href={quote.name}
-  //<Avatar src={quote.name} alt={quote.name} />
-  //<Footer>
-  //  <Attribution>{quote.name}</Attribution>
-  //</Footer>
+    //        href={quote.name}
+    //<Avatar src={quote.name} alt={quote.name} />
+    //<Footer>
+      //  <Attribution>{quote.name}</Attribution>
+      //</Footer>

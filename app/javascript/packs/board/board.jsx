@@ -72,7 +72,6 @@ export default class Board extends Component {
     this.setState({ toggleForm: toggle, cardText: '' });
   }
 
-
   newList(e) {
     e.preventDefault();
     const token = document.querySelector(`meta[name='csrf-token']`).getAttribute('content');
@@ -89,7 +88,15 @@ export default class Board extends Component {
       credentials: 'same-origin'
     })
     .then(() => {
-      fetch('/lists.json')
+      fetch('/lists.json', {
+        method: 'GET',
+        headers: {
+          'X-Requested-With': 'XMLHttpRequest',
+          'Content-type': 'application/json',
+          'X-CSRF-TOKEN': token
+        },
+        credentials: 'same-origin'
+      })
       .then(res => res.json())
       .then(res => this.setState({ lists: res , order: Object.keys(res), toggleListForm: false, listValue: '' }))
     })
@@ -110,7 +117,15 @@ export default class Board extends Component {
       credentials: 'same-origin'
     })
     .then(() => {
-      fetch('/lists.json')
+      fetch('/lists.json', {
+        method: 'GET',
+        headers: {
+          'X-Requested-With': 'XMLHttpRequest',
+          'Content-type': 'application/json',
+          'X-CSRF-TOKEN': token
+        },
+        credentials: 'same-origin'
+      }) 
       .then(res => res.json())
       .then(res => this.setState({ lists: res , order: Object.keys(res), toggleForm: null, cardText: '' }))
     })
