@@ -5,7 +5,7 @@ export const TodoItem = (props) => {
   const handleToggle = partial(props.handleToggle, props.id, props.card_id)
 
   return (
-    <li>
+    <li className='todo-item'>
       <label>
       <input type='checkbox'
         onChange={handleToggle}

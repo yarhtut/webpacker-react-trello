@@ -13,6 +13,7 @@ const reorder = (
 
     const data = { position:  updatePosition }
 
+
     fetch(`/lists/${moveItem}` , {
       body: JSON.stringify(data),
       method: 'PATCH',
@@ -26,7 +27,6 @@ const reorder = (
     return result;
   };
 
-
   const reorderCards = (
     list,
     startIndex,
@@ -34,13 +34,12 @@ const reorder = (
       const result = Array.from(list);
       const [removed] = result.splice(startIndex, 1);
       result.splice(endIndex, 0, removed);
-
       const moveItem = startIndex + 1;
       const updatePosition = endIndex + 1;
 
       const data = { position:  updatePosition  }
-
       const currentMoveCard = list.filter((l) => l.position == moveItem )
+
 
       fetch(`/cards/${currentMoveCard[0].id}` , {
         body: JSON.stringify(data),
@@ -58,22 +57,32 @@ const reorder = (
     export const reorderQuoteMap = ({
       quoteMap,
       source,
-      destination,
+      destination
     }) => {
-      const current = [...quoteMap[source.droppableId]];
-      const next = [...quoteMap[destination.droppableId]];
+
+      const sourceDroppableId = source.droppableId.split('-')[1]
+      const destinationDroppableId = destination.droppableId.split('-')[1]
+      const current = [...quoteMap[sourceDroppableId]][1];
+      const next = [...quoteMap[destinationDroppableId]][1];
+      const currentColumnName = quoteMap[sourceDroppableId][0];
+      const nextColumnName = quoteMap[destinationDroppableId][0];
+
       const target = current[source.index];
       // moving to same list
-      if (source.droppableId === destination.droppableId) {
+      if (sourceDroppableId === destinationDroppableId) {
         const reordered = reorderCards(
           current,
           source.index,
           destination.index,
         );
+
+        const cardReOrdered = [ currentColumnName, reordered ]
+
         const result = {
           ...quoteMap,
-          [source.droppableId]: reordered,
+          [sourceDroppableId]: cardReOrdered,
         };
+
         return {
           quoteMap: result,
           // not auto focusing in own list
@@ -82,10 +91,9 @@ const reorder = (
       }
 
       // moving to different list
-      const listId = current[0].list_id;
-      const sourceCard = current.filter((x) =>  x.position == (source.index + 1));
-      const cardId = sourceCard[0].id;
-      const data = { source: source, destination: destination, listId: listId, cardId: cardId }
+      const cardId = target.id;
+
+      target.list_id = parseInt(destinationDroppableId);
 
       //target.list_id = listId
 
@@ -104,16 +112,19 @@ const reorder = (
       // insert into next
       next.splice(destination.index, 0, target);
 
+      const currentColumn = [ currentColumnName, current ]
+      const nextColumn = [ nextColumnName, next ]
+
       const result = {
         ...quoteMap,
-        [source.droppableId]: current,
-        [destination.droppableId]: next,
+        [sourceDroppableId]: currentColumn,
+        [destinationDroppableId]: nextColumn
       };
 
       return {
         quoteMap: result,
-        autoFocusQuoteId: target.id,
+        autoFocusQuoteId: null,
       };
     };
 
-  export default reorder;
+    export default reorder;

@@ -13,16 +13,17 @@ import Board from './board/board'
 
 document.addEventListener('DOMContentLoaded', () => {
   ReactDOM.render(
-    <App />,
+    <Trello />,
     document.body.appendChild(document.getElementById('board')),
   )
 })
 
-class App extends React.Component {
+class Trello extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
-      lists: {}
+      lists: {},
+      order: []
     }
   }
 
@@ -32,8 +33,7 @@ class App extends React.Component {
   render() {
     return (
       <Board lists={this.state.lists} />
-    )
+      )
   }
 }
-
 

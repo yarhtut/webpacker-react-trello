@@ -51,6 +51,7 @@ class ListsController < ApplicationController
   private
   def broadcast
     list = List.all.sort_by{ |l| l.position }
+
     ActionCable.server.broadcast 'list_channel', message: list.map { |x| [  x.name,  x.cards ] }.to_h.to_json
   end
 

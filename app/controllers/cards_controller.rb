@@ -1,5 +1,5 @@
 class CardsController < ApplicationController
-  before_action :set_card, only: [:show, :edit, :destroy]
+  before_action :set_card, only: [ :edit, :destroy]
   before_action :set_card_by_position, only: [:update]
 
   # GET /cards
@@ -32,7 +32,6 @@ class CardsController < ApplicationController
     card = Card.new(list_id: list_id, name: params[:name])
     card.save
     broadcast if card.save
-    
   end
 
   # PATCH/PUT /cards/1

@@ -192,9 +192,9 @@ export default class QuoteItem extends React.PureComponent {
             contentLabel={quote.name}
           >
             <h2>{quote.name}</h2>
-            <button onClick={this.closeModal}>close</button>
-
+            <button className='close' onClick={this.closeModal}>X</button>
             <p>{quote.description}</p>
+
             <div className='progress-bar'>
               <span>{progressBar} <small> % </small></span>
               <Line percent={progressBar} strokeWidth="1" strokeColor="DodgerBlue" />

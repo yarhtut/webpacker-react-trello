@@ -160,3 +160,18 @@ nav {
     width: 90%;
   }
 }
+
+.todo-list ul {
+  padding: 0
+}
+.todo-item {
+  list-style: none;
+}
+.close {
+  position: absolute;
+  right: 0;
+  top: 0;
+  margin: 2rem;
+  padding: .5rem;
+  border-radius: 30%;
+}

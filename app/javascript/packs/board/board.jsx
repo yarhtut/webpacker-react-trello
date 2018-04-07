@@ -20,6 +20,8 @@ export default class Board extends Component {
       toogleListForm: false
     }
 
+    this.onDragStart = this.onDragStart.bind(this);
+    this.onDragEnd = this.onDragEnd.bind(this);
     this.newList = this.newList.bind(this);
     this.addCard = this.addCard.bind(this);
     this.handleCardText = this.handleCardText.bind(this);
@@ -48,7 +50,9 @@ export default class Board extends Component {
       credentials: 'same-origin'
     })
     .then(res => res.json())
-    .then(res => this.setState({ lists: res , order: Object.keys(res) }))
+    .then(res => {
+      this.setState({ lists: res , order: Object.keys(res) })
+    })
 
     injectGlobal` body { background: rgb(0, 121, 191); } `;
   }
@@ -107,6 +111,7 @@ export default class Board extends Component {
     e.preventDefault();
     const token = document.querySelector(`meta[name='csrf-token']`).getAttribute('content');
 
+
     const data = { list_name: listTitle, name: cardText }
     fetch(`/cards` , {
       body: JSON.stringify(data),
@@ -132,13 +137,13 @@ export default class Board extends Component {
     })
   }
 
-  onDragStart = (initial) => {
+  onDragStart(initial) {
     this.setState({
       autoFocusQuoteId: null,
     });
   }
 
-  onDragEnd = (result) => {
+  onDragEnd(result) {
     // dropped nowhere
     if (!result.destination) {
       return;
@@ -146,6 +151,7 @@ export default class Board extends Component {
 
     const source = result.source;
     const destination = result.destination;
+
     // reordering column
     if (result.type === 'COLUMN') {
       const order = reorder(
@@ -164,11 +170,12 @@ export default class Board extends Component {
     const data = reorderQuoteMap({
       quoteMap: this.state.lists,
       source,
-      destination,
+      destination
     });
 
     this.setState({
       lists: data.quoteMap,
+      order: Object.keys(data.quoteMap),
       autoFocusQuoteId: data.autoFocusQuoteId,
     });
   }
@@ -177,6 +184,7 @@ export default class Board extends Component {
     const lists = this.state.lists;
     const order = this.state.order;
     const { containerHeight } = this.props;
+
     const listForm = this.state.toggleListForm ? (
       <form onSubmit={this.newList}>
         <input type="text" value={this.state.listValue} onChange={this.handleListText} />
@@ -197,9 +205,10 @@ export default class Board extends Component {
               <Column
                 key={key}
                 index={index}
-                title={key}
-                quotes={lists[key]}
-                lists={lists}
+                title={lists[key][0]}
+                droppableTitle={`column-${key}`}
+                quotes={lists[key][1]}
+                lists={lists[1]}
                 autoFocusQuoteId={this.state.autoFocusQuoteId}
                 addCard={this.addCard}
                 cardText={this.state.cardText}
