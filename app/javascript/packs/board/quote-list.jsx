@@ -5,19 +5,20 @@ import QuoteItem from './quote-item';
 import { colors, grid } from './constants';
 
 const Wrapper = styled.div`
-background-color: ${({ isDraggingOver }) => (isDraggingOver ? '#d9fcff' : 'lightblue')};
+background-color: ${({ isDraggingOver }) => (isDraggingOver ? '#d9fcff' : '#e2e4e6')};
 display: flex;
 flex-direction: column;
+height: auto;
 opacity: ${({ isDropDisabled }) => (isDropDisabled ? 0.5 : 'inherit')};
 padding: 8px;
-padding-bottom: 0;
 transition: background-color 0.1s ease, opacity 0.1s ease;
 user-select: none;
 width: 250px;
+border-bottom-left-radius: 3px;
+border-bottom-right-radius: 3px;
 `;
 
 const DropZone = styled.div`
-min-height: 250px;
 margin-bottom: 8px;
 `;
 
@@ -65,8 +66,8 @@ class InnerQuoteList extends Component {
                   provided={dragProvided}
                   autoFocus={this.props.autoFocusQuoteId === quote.id}
                 />
-              {dragProvided.placeholder}
-            </div>
+                {dragProvided.placeholder}
+              </div>
             )}
           </Draggable>
         ))}
@@ -78,29 +79,21 @@ class InnerQuoteList extends Component {
 class InnerList extends Component {
 
   render() {
-    const { index, quotes, dropProvided, autoFocusQuoteId, cardText } = this.props;
-    const title = this.props.title ? (
-      <Title>{this.props.title}</Title>
-    ) : null;
-  
-    //debugger
-    //const currentListId = quotes.map((q) => q.list_id)
-    const listId = index + 1
+    const { index,title, quotes, dropProvided, autoFocusQuoteId, cardText } = this.props;
+    const addCard = this.props.addCard.bind(null, title, cardText);
+    const handleCardText = this.props.handleCardText.bind(null, title);
+    const handleToggleForm = this.props.handleToggleForm.bind(null, title);
 
-    const addCard = this.props.addCard.bind(null, listId, cardText);
-    const handleCardText = this.props.handleCardText.bind(null, listId);
-    const handleToggleForm = this.props.handleToggleForm.bind(null, listId);
-    //debugger
-    const form = (this.props.toggleForm == listId) ? (
-      <form onSubmit={addCard}>
-        <input type="text" value={cardText} onChange={handleCardText} />
-        <input type="submit" value="Add Card" className='btn' />
-      </form>
-    ) : <button className='btn' onClick={handleToggleForm}>add new</button>;
+    const form = (this.props.toggleForm == title) ? (
+        <form onSubmit={addCard}>
+          <input type="text" value={cardText} onChange={handleCardText} />
+          <input type="submit" value="Add" className='submit-btn' />
+          <a href='' className='btn' onClick={handleToggleForm}>X</a>
+        </form>
+    ) : <a href='' className='btn' onClick={handleToggleForm}>Add a card...</a>;
 
     return (
       <Container>
-        {title}
         <DropZone innerRef={dropProvided.innerRef}>
           <InnerQuoteList
             quotes={quotes}
@@ -133,48 +126,48 @@ export default class QuoteList extends Component {
       handleCardText,
       handleToggleForm,
       toggleForm
-    } = this.props;
+      } = this.props;
 
-    return (
-      <Droppable
-        droppableId={droppableTitle}
-        type={listType}
-        ignoreContainerClipping={ignoreContainerClipping}
-        isDropDisabled={isDropDisabled}
-      >
-        {(dropProvided: DroppableProvided, dropSnapshot: DroppableStateSnapshot) => (
-          <Wrapper
-            style={style}
-            isDraggingOver={dropSnapshot.isDraggingOver}
-            isDropDisabled={isDropDisabled}
-            {...dropProvided.droppableProps}
-          >
-            {internalScroll ? (
-              <ScrollContainer>
+      return (
+        <Droppable
+          droppableId={listId}
+          type={listType}
+          ignoreContainerClipping={ignoreContainerClipping}
+          isDropDisabled={isDropDisabled}
+        >
+          {(dropProvided: DroppableProvided, dropSnapshot: DroppableStateSnapshot) => (
+            <Wrapper
+              style={style}
+              isDraggingOver={dropSnapshot.isDraggingOver}
+              isDropDisabled={isDropDisabled}
+              {...dropProvided.droppableProps}
+            >
+              {internalScroll ? (
+                <ScrollContainer>
+                  <InnerList
+                    quotes={quotes}
+                    title={title}
+                    dropProvided={dropProvided}
+                    autoFocusQuoteId={autoFocusQuoteId}
+                  />
+                </ScrollContainer>
+              ) : (
                 <InnerList
+                  index={index}
                   quotes={quotes}
                   title={title}
                   dropProvided={dropProvided}
                   autoFocusQuoteId={autoFocusQuoteId}
+                  addCard={addCard}
+                  cardText={cardText}
+                  toggleForm={toggleForm}
+                  handleCardText={handleCardText}
+                  handleToggleForm={handleToggleForm}
                 />
-              </ScrollContainer>
-            ) : (
-              <InnerList
-                index={index}
-                quotes={quotes}
-                title={title}
-                dropProvided={dropProvided}
-                autoFocusQuoteId={autoFocusQuoteId}
-                addCard={addCard}
-                cardText={cardText}
-                toggleForm={toggleForm}
-                handleCardText={handleCardText}
-                handleToggleForm={handleToggleForm}
-              />
-            )}
-          </Wrapper>
-        )}
-      </Droppable>
-    );
-  }
-}
+              )}
+            </Wrapper>
+          )}
+        </Droppable>
+      );
+    }
+    }

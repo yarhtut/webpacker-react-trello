@@ -20,6 +20,8 @@ $silver: #cccccc;
 $seashell: #f1f1f1;
 
 body {
+  margin: 0;
+  padding: 0;
   background-color: DodgerBlue;
 
   h1 {
@@ -27,8 +29,10 @@ body {
   }
 
   h4 {
-    color: dimGrey;
-    text-decoration: underline;
+    color: #111111;
+    font-weight: 800;
+    margin-left: .1rem;
+    text-transform: uppercase;
   }
 
   color: grey;
@@ -70,13 +74,13 @@ body {
 }
 
 .btn {
-  padding: .3rem .5rem;
-  border-radius: 1rem;
-  border: 1px solid white;
-  color: dimGrey;
-  margin: .5rem 0;
+  padding: .3rem 0;
+  color: darkGray;
   cursor: pointer;
+  text-decoration: none;
+  display: inline-block;
 }
+
 .bg-btn {
   width: 20rem;
   height: 3rem;
@@ -93,16 +97,68 @@ form {
     margin-top: 1rem;
     display: inline-flex;
     width: 98%;
-    height: 2rem;
+    height: 4rem;
     margin-bottom: .5rem;
+    transition: background 85ms ease-in,border-color 85ms ease-in;
+  }
+
+  input[type=submit] {
+    padding: .5rem 1rem;
+    background-color: #61bd4f;
+    border-radius: 5px;
+    border: none;
+    color: #fefefe;
+    font-weight: 600;
+    font-size: 14px;
+    margin-right: 1rem;
   }
 }
 
 a.btn {
-  color: white;
+  //  color: white;
 }
+
 .ReactModal__Overlay {
-  background-color: rgba(0,0,0,0.65)!important;
+  background-color: rgba(0, 0, 0, 0.65) !important;
+}
+
+nav {
+  display: flex;
+  color: $white;
+
+  ul {
+    list-style: none;
+    color: $white;
+    align-self: center;
+    margin: 0;
+  }
+
+  li {
+    display: flex;
+    justify-content: center;
+    align-self: center;
+    text-align: center;
+
+    a {
+      padding: 1rem;
+      text-decoration: none;
+      color: white;
+    }
+  }
+
+  .logo {}
+
+  .singin {
+    margin-left: auto;
+  }
+}
+
+.progress-bar {
+  margin: 1rem 0;
+
+  .rc-progress-line {
+    width: 90%;
+  }
 }
 
 .todo-list ul {

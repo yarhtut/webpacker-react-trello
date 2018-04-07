@@ -28,23 +28,26 @@ export default class Board extends Component {
     this.handleListText = this.handleListText.bind(this);
     this.handleToggleForm = this.handleToggleForm.bind(this);
     this.handleToggleListForm = this.handleToggleListForm.bind(this);
+
     const binder = this
-    // App.cable.subscriptions.create("ListsChannel", {
-    //   received: function(data) {
-    //     binder.setState({ lists:  JSON.parse(data.message), order: Object.keys(JSON.parse(data.message)) })
-    //   }
-    // });
-    // App.cable.subscriptions.create("ListsChannel", {
-    //   received: function(data) {
-    //     binder.setState({ lists:  JSON.parse(data.message), order: Object.keys(JSON.parse(data.message)) })
-    //   }
-    // });
+    App.cable.subscriptions.create("ListsChannel", {
+      received: function(data) {
+        binder.setState({ lists:  JSON.parse(data.message), order: Object.keys(JSON.parse(data.message)) })
+      }
+    });
   }
 
   //boardRef: ?HTMLElement
 
   componentWillMount() {
-    fetch('/lists.json')
+    const token = document.querySelector(`meta[name='csrf-token']`).getAttribute('content');
+    fetch('/lists.json', {
+      headers: {
+        'X-Requested-With': 'XMLHttpRequest',
+        'X-CSRF-TOKEN': token
+      },
+      credentials: 'same-origin'
+    })
     .then(res => res.json())
     .then(res => {
       this.setState({ lists: res , order: Object.keys(res) })
@@ -54,6 +57,7 @@ export default class Board extends Component {
   }
 
   handleCardText(listId, e) {
+    e.preventDefault();
     this.setState({cardText: e.target.value});
   }
 
@@ -61,12 +65,15 @@ export default class Board extends Component {
     this.setState({toggleListForm: true});
   }
 
-  handleListText( e) {
+  handleListText(e) {
+    e.preventDefault();
     this.setState({listValue: e.target.value});
   }
 
-  handleToggleForm(listId, e) {
-    this.setState({ toggleForm: listId, cardText: '' });
+  handleToggleForm(title, e) {
+    e.preventDefault();
+    const toggle = this.state.toggleForm ? '' : title
+    this.setState({ toggleForm: toggle, cardText: '' });
   }
 
   newList(e) {
@@ -78,23 +85,31 @@ export default class Board extends Component {
       body: JSON.stringify(data),
       method: 'POST',
       headers: {
+        'X-Requested-With': 'XMLHttpRequest',
         'Content-type': 'application/json',
         'X-CSRF-TOKEN': token
       },
       credentials: 'same-origin'
     })
     .then(() => {
-      fetch('/lists.json')
+      fetch('/lists.json', {
+        method: 'GET',
+        headers: {
+          'X-Requested-With': 'XMLHttpRequest',
+          'Content-type': 'application/json',
+          'X-CSRF-TOKEN': token
+        },
+        credentials: 'same-origin'
+      })
       .then(res => res.json())
       .then(res => this.setState({ lists: res , order: Object.keys(res), toggleListForm: false, listValue: '' }))
     })
   }
 
-  addCard(listId, card, e) {
+  addCard(listTitle, cardText, e) {
     e.preventDefault();
     const token = document.querySelector(`meta[name='csrf-token']`).getAttribute('content');
-    const data = { list_id: listId, name: card }
-
+    const data = { list_name: listTitle, name: cardText }
     fetch(`/cards` , {
       body: JSON.stringify(data),
       method: 'POST',
@@ -105,7 +120,15 @@ export default class Board extends Component {
       credentials: 'same-origin'
     })
     .then(() => {
-      fetch('/lists.json')
+      fetch('/lists.json', {
+        method: 'GET',
+        headers: {
+          'X-Requested-With': 'XMLHttpRequest',
+          'Content-type': 'application/json',
+          'X-CSRF-TOKEN': token
+        },
+        credentials: 'same-origin'
+      })
       .then(res => res.json())
       .then(res => this.setState({ lists: res , order: Object.keys(res), toggleForm: null, cardText: '' }))
     })
@@ -144,7 +167,7 @@ export default class Board extends Component {
     const data = reorderQuoteMap({
       quoteMap: this.state.lists,
       source,
-      destination 
+      destination
     });
 
     this.setState({
@@ -230,5 +253,6 @@ width: 10rem;
 height: 3rem;
 display: flex;
 flex-direction: column;
+background: red;
 `;
 

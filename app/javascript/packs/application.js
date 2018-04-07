@@ -28,11 +28,6 @@ class Trello extends React.Component {
   }
 
   componentDidMount() {
-    fetch('/lists.json')
-    .then(res => res.json())
-    .then(res => {
-      this.setState({ lists: res , order: Object.keys(res) })
-    })
   }
 
   render() {

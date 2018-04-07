@@ -12,7 +12,8 @@ class CardsController < ApplicationController
   # GET /cards/1.json
   def show
     card = Card.find_by_id(params[:id])
-    render json:  card.todos
+    
+    render json:   {users: card.users, todos: card.todos}.to_h
   end
 
   # GET /cards/new
@@ -27,11 +28,10 @@ class CardsController < ApplicationController
   # POST /cards
   # POST /cards.json
   def create
-     list_id = List.find_by_position(card_params['list_id']).id
-     @card = Card.new(list_id: list_id, name: card_params['name'])
-     @card.save
-     broadcast if @card.save
-    
+    list_id = List.find_by(name: params[:list_name]).id
+    card = Card.new(list_id: list_id, name: params[:name])
+    card.save
+    broadcast if card.save
   end
 
   # PATCH/PUT /cards/1
@@ -44,21 +44,17 @@ class CardsController < ApplicationController
   # DELETE /cards/1
   # DELETE /cards/1.json
   def destroy
-    #new_name = @card.name
     new_position = params[:destination][:index] + 1
-    #new_list_id = List.find_by_name(params[:destinationColumnId]).id
-    @card.update_attributes(list_id: params[:destinationColumnId], position: new_position)
+    new_list_id = List.find_by(name: params[:destination][:droppableId]).id
 
-    #@card.destroy
-    #@new_card = Card.new(list_id: new_list_id, name: new_name,  position: new_position)
-    #@new_card.save
+    @card.update_attributes(list_id: new_list_id, position: new_position)
     broadcast
   end
 
   private
   def broadcast
     list = List.all.sort_by{ |l| l.position }
-    ActionCable.server.broadcast 'list_channel', message: list.collect { |x| [ x.position, [  x.name,  x.cards ]] }.to_h.to_json
+    ActionCable.server.broadcast 'list_channel', message: list.collect { |x| [  x.name,  x.cards ] }.to_h.to_json
   end
   # Use callbacks to share common setup or constraints between actions.
   def set_card
@@ -71,6 +67,6 @@ class CardsController < ApplicationController
 
   # Never trust parameters from the scary internet, only allow the white list through.
   def card_params
-    params.require(:card).permit(:list_id, :name, :position, :destination, :destinationColumnName, :listId, :cardId)
+    params.require(:card).permit(:list_id, :list_name, :name, :position)
   end
 end

@@ -6,4 +6,6 @@ class Card < ApplicationRecord
   validates :name, presence: true
 
   has_many :todos, dependent: :destroy
+
+  has_and_belongs_to_many :users
 end

@@ -95,7 +95,6 @@ const reorder = (
 
       target.list_id = parseInt(destinationDroppableId);
 
-      const data = { source: source, destination: destination, destinationColumnId: destinationDroppableId, cardId: cardId }
       fetch(`/cards/${cardId}` , {
         body: JSON.stringify(data),
         method: 'DELETE',
@@ -105,6 +104,7 @@ const reorder = (
         },
         credentials: 'same-origin'
       })
+
       // remove from original
       current.splice(source.index, 1);
       // insert into next

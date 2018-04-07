@@ -7,6 +7,7 @@ import { colors, grid } from './constants';
 const Wrapper = styled.div`
   display: flex;
   flex-direction: column;
+  height: auto;
 `;
 
 const Container = styled.div`
@@ -17,20 +18,22 @@ const Container = styled.div`
 
 const Header = styled.div`
   display: flex;
+  height: 3rem;
   align-items: center;
   justify-content: center;
-  border-top-left-radius: 2px;
-  border-top-right-radius: 2px;
-  background-color: ${({ isDragging }) => (isDragging ? 'lightblue' : '#d9fcff')};
+  border-top-left-radius: 3px;
+  border-top-right-radius: 3px;
+  background-color: ${({ isDragging }) => (isDragging ? 'lightblue' : '#e2e4e6')};
   transition: background-color 0.1s ease;
 
   &:hover {
     background-color: #d9fcff;
   }
 `;
-
+//lightblue
+//d9fcff
 const Title = styled.h4`
-  padding: ${grid}px;
+  padding: 8px;
   transition: background-color ease 0.2s;
   flex-grow: 1;
   user-select: none;
@@ -73,7 +76,8 @@ export default class Column extends Component {
               </Header>
               <QuoteList
                 listId={title}
-                droppableTitle={droppableTitle}
+                title={title}
+                index={index}
                 listType="QUOTE"
                 quotes={quotes}
                 autoFocusQuoteId={this.props.autoFocusQuoteId}
