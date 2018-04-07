@@ -152,3 +152,11 @@ nav {
     margin-left: auto;
   }
 }
+
+.progress-bar {
+  margin: 1rem 0;
+
+  .rc-progress-line {
+    width: 90%;
+  }
+}

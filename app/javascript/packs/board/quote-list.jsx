@@ -8,9 +8,9 @@ const Wrapper = styled.div`
 background-color: ${({ isDraggingOver }) => (isDraggingOver ? '#d9fcff' : '#e2e4e6')};
 display: flex;
 flex-direction: column;
+height: auto;
 opacity: ${({ isDropDisabled }) => (isDropDisabled ? 0.5 : 'inherit')};
 padding: 8px;
-padding-bottom: 0;
 transition: background-color 0.1s ease, opacity 0.1s ease;
 user-select: none;
 width: 250px;
@@ -19,7 +19,6 @@ border-bottom-right-radius: 3px;
 `;
 
 const DropZone = styled.div`
-min-height: 250px;
 margin-bottom: 8px;
 `;
 

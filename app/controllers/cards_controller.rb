@@ -12,7 +12,8 @@ class CardsController < ApplicationController
   # GET /cards/1.json
   def show
     card = Card.find_by_id(params[:id])
-    render json:  card.todos
+    
+    render json:   {users: card.users, todos: card.todos}.to_h
   end
 
   # GET /cards/new

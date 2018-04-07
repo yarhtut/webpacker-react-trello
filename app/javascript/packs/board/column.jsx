@@ -7,6 +7,7 @@ import { colors, grid } from './constants';
 const Wrapper = styled.div`
   display: flex;
   flex-direction: column;
+  height: auto;
 `;
 
 const Container = styled.div`
@@ -16,7 +17,7 @@ const Container = styled.div`
 `;
 
 const Header = styled.div`
-display: flex;
+  display: flex;
   height: 3rem;
   align-items: center;
   justify-content: center;
