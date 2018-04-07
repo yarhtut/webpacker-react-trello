@@ -40,6 +40,7 @@ export default class Board extends Component {
   componentWillMount() {
     const token = document.querySelector(`meta[name='csrf-token']`).getAttribute('content');
     fetch('/lists.json', {
+      method: 'GET',
       headers: {
         'X-Requested-With': 'XMLHttpRequest',
         'X-CSRF-TOKEN': token
