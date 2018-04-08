@@ -1,6 +1,6 @@
 import React from 'react';
 
-export const UserForm = (props) => 
+export const TodoForm = (props) => 
 (
   <form onSubmit={props.handleSubmitUser}>
     <input type='text' 

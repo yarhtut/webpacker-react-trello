@@ -1,5 +1,6 @@
 class CardsController < ApplicationController
-  before_action :set_card, only: [:show, :edit, :destroy]
+  before_action :set_card, only: [:show, :edit, :destroy, :add_user]
+  before_action :set_user, only: [:add_user]
   before_action :set_card_by_position, only: [:update]
 
   # GET /cards
@@ -42,6 +43,11 @@ class CardsController < ApplicationController
     broadcast
   end
 
+  def add_user
+    @card.users << @user
+    broadcast
+  end
+
   # DELETE /cards/1
   # DELETE /cards/1.json
   def destroy
@@ -66,8 +72,12 @@ class CardsController < ApplicationController
     @card_position = Card.find_by(id: params[:id])
   end
 
+  def set_user
+    @user = User.find_by_id(params[:user_id])
+  end
+
   # Never trust parameters from the scary internet, only allow the white list through.
   def card_params
-    params.require(:card).permit(:list_id, :list_name, :name, :position)
+    params.require(:card).permit(:list_id, :list_name, :name, :position, :user_id)
   end
 end

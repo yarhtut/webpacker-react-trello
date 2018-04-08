@@ -10,6 +10,8 @@ import { TodoForm, TodoList } from '../components/todo/';
 import { UserList } from '../components/user/';
 import { addTodo, generateId , findById, toggleTodo, updateTodo} from '../lib/todoHelpers.js';
 
+const token = document.querySelector(`meta[name='csrf-token']`).getAttribute('content');
+
 export default class QuoteItem extends React.PureComponent {
   constructor(props) {
     super(props)
@@ -17,6 +19,7 @@ export default class QuoteItem extends React.PureComponent {
       modalIsOpen: false,
       todos: [],
       users: [],
+      allUser: [],
       currentTodo: '',
       addedUser: '',
       progressTodo: 0,
@@ -59,6 +62,22 @@ export default class QuoteItem extends React.PureComponent {
 
   toggleUserSelect(e) {
     e.preventDefault();
+
+    fetch(`/users.json`, {
+      headers: {
+        'X-Requested-With': 'XMLHttpRequest',
+        'Content-type': 'application/json',
+        'X-CSRF-TOKEN': token
+      },
+      credentials: 'same-origin'
+    })
+    .then(res => res.json())
+    .then(res => {
+      this.setState({
+        allUser: res,
+        openUserSelect: true
+      })
+    })
     this.setState({ openUserSelect: true })
   }
 
@@ -179,8 +198,40 @@ export default class QuoteItem extends React.PureComponent {
     this.setState({ addedUser: e.target.value });
   }
 
-  handleSubmitUser(storyId, e) {
+  handleSubmitUser(cardId, e) {
     e.preventDefault();
+    console.log(cardId)
+
+    const token = document.querySelector(`meta[name='csrf-token']`).getAttribute('content');
+    const data = { card_id: cardId, user_id: this.state.addedUser }
+
+    fetch(`/cards/${cardId}.json`, {
+      body: JSON.stringify(data),
+      method: 'POST',
+      headers: {
+        'X-Requested-With': 'XMLHttpRequest',
+        'Content-type': 'application/json',
+        'X-CSRF-TOKEN': token
+      },
+      credentials: 'same-origin'
+    })
+    .then(() => {
+      fetch(`/cards/${cardId}.json`, {
+        headers: {
+          'X-Requested-With': 'XMLHttpRequest',
+          'Content-type': 'application/json',
+          'X-CSRF-TOKEN': token
+        },
+        credentials: 'same-origin'
+      })
+      .then(res => res.json())
+      .then(res => {
+        this.setState({
+          openUserSelect: false,
+          users: res.users
+        })
+      })
+    })
 
   }
 
@@ -188,8 +239,7 @@ export default class QuoteItem extends React.PureComponent {
     const { quote, isDragging, provided } = this.props;
     const submitHandler = this.state.currentTodo ? this.handleSubmit.bind(this, quote.id) : this.handleEmptySubmit.bind(this, quote.id);
 
-    const USER = [ 'Andy', 'Amma', 'Ben', 'Braydan', 'Dan', 'Eddy', 'Gav', 'Gus', 'Olly', 'Theo', 'Tim', 'Yar']
-    const userOption = USER.map((u) => <option key={u} value={u}> {u}</option>)
+    const userOption = this.state.allUser.map((u) => <option key={u.id} value={u.id}> {u.name}</option>)
 
     const progressBar = (isNaN(this.state.progressTodo)) ? 0 : this.state.progressTodo;
 
@@ -201,7 +251,7 @@ export default class QuoteItem extends React.PureComponent {
       ) : <a onClick={this.openTodoTextBox}>Add checklist...</a>
 
       const userForm = this.state.openUserSelect ? (
-        <form onSubmit={this.handleSubmitUser}>
+        <form onSubmit={this.handleSubmitUser.bind(this, quote.id)}>
           <label>
             Add user:
             <select value={this.state.addedUser} onChange={this.handleChangeUser}>
@@ -238,14 +288,15 @@ export default class QuoteItem extends React.PureComponent {
             <p>{quote.description}</p>
 
             <div className='card-user'>
+              <h3>Users</h3>
               <UserList userId={quote.id} users={this.state.users} />
               { userForm }
             </div>
             <div className='progress-bar'>
+              <h3>CheckList</h3>
               <span>{progressBar} <small> % </small></span>
               <Line percent={progressBar} strokeWidth="1" strokeColor="DodgerBlue" />
             </div>
-
             <div className='todo-app'>
               { this.state.errorMessage && <span className='error'> {this.state.errorMessage}</span> }
               <div className='todo-list'>

@@ -164,11 +164,13 @@ nav {
 }
 
 ul {
-  padding: 0
+  padding: 0;
 }
+
 ul li {
   list-style: none;
 }
+
 .close {
   position: absolute;
   right: 0;
@@ -177,14 +179,24 @@ ul li {
   padding: .5rem;
   border-radius: 5px;
 }
+
 *:focus {
-    outline: none;
+  outline: none;
 }
 
 .card-user {
   margin: 3rem 0;
-  li { position: relative; }
-  img { width: 2rem; }
+
+  li {
+    position: relative;
+    display: inline-grid;
+    margin-right: .5rem;
+  }
+
+  img {
+    width: 2rem;
+  }
+
   span {
     position: absolute;
     left: 0;
