@@ -7,6 +7,7 @@ import { Progress } from 'react-sweet-progress';
 import { Line, Circle } from 'rc-progress';
 
 import { TodoForm, TodoList } from '../components/todo/';
+import { UserList } from '../components/user/';
 import { addTodo, generateId , findById, toggleTodo, updateTodo} from '../lib/todoHelpers.js';
 
 export default class QuoteItem extends React.PureComponent {
@@ -15,6 +16,7 @@ export default class QuoteItem extends React.PureComponent {
     this.state = {
       modalIsOpen: false,
       todos: [],
+      users: [],
       currentTodo: '',
       progressTodo: 0,
       toggleTodoTextBox: false
@@ -63,6 +65,7 @@ export default class QuoteItem extends React.PureComponent {
       let totalChecked = res.todos.filter((c) => c.checked == true).length;
       this.setState({
         todos: res.todos,
+        users: res.users,
         modalIsOpen: true,
         progressTodo: (Math.round(totalChecked / res.todos.length * 100))
       })
@@ -105,7 +108,7 @@ export default class QuoteItem extends React.PureComponent {
       .then(res => res.json())
       .then(res => {
         let totalChecked = res.todos.filter((c) => c.checked == true).length;
-        this.setState({ todos: res.todos , errorMessage: '', currentTodo: '', progressTodo: (Math.round(totalChecked / res.todos.length * 100)) })
+        this.setState({ todos: res.todos , users: res.users, errorMessage: '', currentTodo: '', progressTodo: (Math.round(totalChecked / res.todos.length * 100)) })
       })
     })
   }
@@ -141,12 +144,12 @@ export default class QuoteItem extends React.PureComponent {
       })
       .then(res => res.json())
       .then(res => {
-        let totalChecked = res.filter((c) => c.checked == true).length;
+        let totalChecked = res.todos.filter((c) => c.checked == true).length;
         this.setState({ 
-          todos: res ,
+          todos: res.todos ,
           errorMessage: '',
           currentTodo: '',
-          progressTodo: (Math.round(totalChecked / res.length * 100)),
+          progressTodo: (Math.round(totalChecked / res.todos.length * 100)),
           toggleTodoTextBox: false
         })
       })
@@ -192,9 +195,12 @@ export default class QuoteItem extends React.PureComponent {
             contentLabel={quote.name}
           >
             <h2>{quote.name}</h2>
-            <button onClick={this.closeModal}>close</button>
-
+            <button className='close' onClick={this.closeModal}>X</button>
             <p>{quote.description}</p>
+
+            <div className='card-user'>
+              <UserList userId={quote.id} users={this.state.users} />
+            </div>
             <div className='progress-bar'>
               <span>{progressBar} <small> % </small></span>
               <Line percent={progressBar} strokeWidth="1" strokeColor="DodgerBlue" />
@@ -215,7 +221,7 @@ export default class QuoteItem extends React.PureComponent {
 
 const customStyles = {
   content : {
-    top                   : '30%',
+    top                   : '40%',
     left                  : '50%',
     right                 : 'auto',
     bottom                : 'auto',
