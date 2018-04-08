@@ -146,15 +146,14 @@ export default class QuoteItem extends React.PureComponent {
   }
 
   handleOnChange(e) {
+    e.preventDefault();
     this.setState({ currentTodo: e.target.value });
   }
 
   handleSubmit(storyId, e) {
     e.preventDefault();
-
     const token = document.querySelector(`meta[name='csrf-token']`).getAttribute('content');
     const data = { card_id: storyId, text: this.state.currentTodo, checked: false }
-
     fetch(`/todos` , {
       body: JSON.stringify(data),
       method: 'POST',
@@ -246,7 +245,7 @@ export default class QuoteItem extends React.PureComponent {
     const todoForm = this.state.toggleTodoTextBox ? (
       <TodoForm currentTodo={this.state.currentTodo}
         handleOnChange={this.handleOnChange}
-        handleSubmit={submitHandler}
+        handleSubmit={this.handleSubmit.bind(this, quote.id)}
       />
       ) : <a onClick={this.openTodoTextBox}>Add checklist...</a>
 

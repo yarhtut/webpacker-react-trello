@@ -33,7 +33,6 @@ class CardsController < ApplicationController
     card = Card.new(list_id: list_id, name: params[:name])
     card.save
     broadcast if card.save
-    
   end
 
   # PATCH/PUT /cards/1
