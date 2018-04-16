@@ -5,7 +5,7 @@ export const UserForm = (props) =>
   <form onSubmit={props.handleSubmitUser}>
     <label>
       Add user:
-      <select value={props..addedUser} onChange={props.handleChangeUser}>
+      <select value={props.addedUser} onChange={props.handleChangeUser}>
         { userOption }
       </select>
     </label>
