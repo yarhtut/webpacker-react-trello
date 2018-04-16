@@ -7,7 +7,10 @@ import { Progress } from 'react-sweet-progress';
 import { Line, Circle } from 'rc-progress';
 
 import { TodoForm, TodoList } from '../components/todo/';
+import { UserList } from '../components/user/';
 import { addTodo, generateId , findById, toggleTodo, updateTodo} from '../lib/todoHelpers.js';
+
+const token = document.querySelector(`meta[name='csrf-token']`).getAttribute('content');
 
 export default class QuoteItem extends React.PureComponent {
   constructor(props) {
@@ -15,19 +18,28 @@ export default class QuoteItem extends React.PureComponent {
     this.state = {
       modalIsOpen: false,
       todos: [],
+      users: [],
+      allUser: [],
       currentTodo: '',
+      addedUser: '',
       progressTodo: 0,
-      toggleTodoTextBox: false
+      toggleTodoTextBox: false,
+      openUserSelect: false
     }
 
     this.openModal = this.openModal.bind(this);
     this.openTodoTextBox = this.openTodoTextBox.bind(this);
+    this.toggleUserSelect = this.toggleUserSelect.bind(this);
     this.afterOpenModal = this.afterOpenModal.bind(this);
     this.closeModal = this.closeModal.bind(this);
     this.handleToggle = this.handleToggle.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
     this.handleOnChange = this.handleOnChange.bind(this);
     this.handleEmptySubmit = this.handleEmptySubmit.bind(this);
+
+    // User
+    this.handleChangeUser = this.handleChangeUser.bind(this);
+    this.handleSubmitUser = this.handleSubmitUser.bind(this);
   }
 
   componentDidMount() {
@@ -48,8 +60,30 @@ export default class QuoteItem extends React.PureComponent {
     this.setState({ toggleTodoTextBox: true })
   }
 
+  toggleUserSelect(e) {
+    e.preventDefault();
+
+    fetch(`/users.json`, {
+      headers: {
+        'X-Requested-With': 'XMLHttpRequest',
+        'Content-type': 'application/json',
+        'X-CSRF-TOKEN': token
+      },
+      credentials: 'same-origin'
+    })
+    .then(res => res.json())
+    .then(res => {
+      this.setState({
+        allUser: res,
+        openUserSelect: true
+      })
+    })
+    this.setState({ openUserSelect: true })
+  }
+
   openModal(storyId) {
     const token = document.querySelector(`meta[name='csrf-token']`).getAttribute('content');
+
     fetch(`/cards/${storyId}.json`, {
       headers: {
         'X-Requested-With': 'XMLHttpRequest',
@@ -63,6 +97,7 @@ export default class QuoteItem extends React.PureComponent {
       let totalChecked = res.todos.filter((c) => c.checked == true).length;
       this.setState({
         todos: res.todos,
+        users: res.users,
         modalIsOpen: true,
         progressTodo: (Math.round(totalChecked / res.todos.length * 100))
       })
@@ -105,21 +140,20 @@ export default class QuoteItem extends React.PureComponent {
       .then(res => res.json())
       .then(res => {
         let totalChecked = res.todos.filter((c) => c.checked == true).length;
-        this.setState({ todos: res.todos , errorMessage: '', currentTodo: '', progressTodo: (Math.round(totalChecked / res.todos.length * 100)) })
+        this.setState({ todos: res.todos , users: res.users, errorMessage: '', currentTodo: '', progressTodo: (Math.round(totalChecked / res.todos.length * 100)) })
       })
     })
   }
 
   handleOnChange(e) {
+    e.preventDefault();
     this.setState({ currentTodo: e.target.value });
   }
 
   handleSubmit(storyId, e) {
     e.preventDefault();
-
     const token = document.querySelector(`meta[name='csrf-token']`).getAttribute('content');
     const data = { card_id: storyId, text: this.state.currentTodo, checked: false }
-
     fetch(`/todos` , {
       body: JSON.stringify(data),
       method: 'POST',
@@ -141,12 +175,12 @@ export default class QuoteItem extends React.PureComponent {
       })
       .then(res => res.json())
       .then(res => {
-        let totalChecked = res.filter((c) => c.checked == true).length;
-        this.setState({ 
-          todos: res ,
+        let totalChecked = res.todos.filter((c) => c.checked == true).length;
+        this.setState({
+          todos: res.todos ,
           errorMessage: '',
           currentTodo: '',
-          progressTodo: (Math.round(totalChecked / res.length * 100)),
+          progressTodo: (Math.round(totalChecked / res.todos.length * 100)),
           toggleTodoTextBox: false
         })
       })
@@ -158,18 +192,75 @@ export default class QuoteItem extends React.PureComponent {
     this.setState({ errorMessage: 'Please suply a new todo name' });
   }
 
+  handleChangeUser(e) {
+    e.preventDefault();
+    this.setState({ addedUser: e.target.value });
+  }
+
+  handleSubmitUser(cardId, e) {
+    e.preventDefault();
+    console.log(cardId)
+
+    const token = document.querySelector(`meta[name='csrf-token']`).getAttribute('content');
+    const data = { card_id: cardId, user_id: this.state.addedUser }
+
+    fetch(`/cards/${cardId}.json`, {
+      body: JSON.stringify(data),
+      method: 'POST',
+      headers: {
+        'X-Requested-With': 'XMLHttpRequest',
+        'Content-type': 'application/json',
+        'X-CSRF-TOKEN': token
+      },
+      credentials: 'same-origin'
+    })
+    .then(() => {
+      fetch(`/cards/${cardId}.json`, {
+        headers: {
+          'X-Requested-With': 'XMLHttpRequest',
+          'Content-type': 'application/json',
+          'X-CSRF-TOKEN': token
+        },
+        credentials: 'same-origin'
+      })
+      .then(res => res.json())
+      .then(res => {
+        this.setState({
+          openUserSelect: false,
+          users: res.users
+        })
+      })
+    })
+
+  }
+
   render() {
     const { quote, isDragging, provided } = this.props;
     const submitHandler = this.state.currentTodo ? this.handleSubmit.bind(this, quote.id) : this.handleEmptySubmit.bind(this, quote.id);
+
+    const userOption = this.state.allUser.map((u) => <option key={u.id} value={u.id}> {u.name}</option>)
 
     const progressBar = (isNaN(this.state.progressTodo)) ? 0 : this.state.progressTodo;
 
     const todoForm = this.state.toggleTodoTextBox ? (
       <TodoForm currentTodo={this.state.currentTodo}
         handleOnChange={this.handleOnChange}
-        handleSubmit={submitHandler}
+        handleSubmit={this.handleSubmit.bind(this, quote.id)}
       />
       ) : <a onClick={this.openTodoTextBox}>Add checklist...</a>
+
+      const userForm = this.state.openUserSelect ? (
+        <form onSubmit={this.handleSubmitUser.bind(this, quote.id)}>
+          <label>
+            Add user:
+            <select value={this.state.addedUser} onChange={this.handleChangeUser}>
+              { userOption }
+            </select>
+          </label>
+          <input type="submit" value="Submit" />
+        </form>
+      ) : <a onClick={this.toggleUserSelect}>Add users ...</a>
+
       return (
         <div>
           <Container
@@ -195,7 +286,14 @@ export default class QuoteItem extends React.PureComponent {
             <button className='close' onClick={this.closeModal}>X</button>
             <p>{quote.description}</p>
 
+            <div className='card-user'>
+              <h3>Users</h3>
+              <UserList userId={quote.id} users={this.state.users} />
+              { userForm }
+            </div>
+
             <div className='progress-bar'>
+              <h3>CheckList</h3>
               <span>{progressBar} <small> % </small></span>
               <Line percent={progressBar} strokeWidth="1" strokeColor="DodgerBlue" />
             </div>
@@ -215,7 +313,7 @@ export default class QuoteItem extends React.PureComponent {
 
 const customStyles = {
   content : {
-    top                   : '30%',
+    top                   : '40%',
     left                  : '50%',
     right                 : 'auto',
     bottom                : 'auto',
@@ -228,29 +326,29 @@ const customStyles = {
 };
 
 const Container = styled.div`
-  border-radius: 3px;
-  border-bottom: 1px solid #cccccc;
-  background-color: ${({ isDragging }) => (isDragging ? colors.green : colors.white)};
-  box-shadow: ${({ isDragging }) => (isDragging ? `2px 2px 1px ${colors.shadow}` : 'none')};
-  padding: ${grid}px;
-  min-height: 40px;
-  margin-bottom: ${grid}px;
-  user-select: none;
-  transition: background-color 0.1s ease;
+border-radius: 3px;
+border-bottom: 1px solid #cccccc;
+background-color: ${({ isDragging }) => (isDragging ? colors.green : colors.white)};
+box-shadow: ${({ isDragging }) => (isDragging ? `2px 2px 1px ${colors.shadow}` : 'none')};
+padding: ${grid}px;
+min-height: 40px;
+margin-bottom: ${grid}px;
+user-select: none;
+transition: background-color 0.1s ease;
 
-  color: ${colors.black};
+color: ${colors.black};
 
-  &:hover {
-    background-color: ${colors.blue.lighter};
-    text-decoration: none;
-  }
-  &:focus {
-    outline: 2px solid ${colors.purple};
-    box-shadow: none;
-  }
+&:hover {
+  background-color: ${colors.blue.lighter};
+  text-decoration: none;
+}
+&:focus {
+  outline: 2px solid ${colors.purple};
+  box-shadow: none;
+}
 
-  display: flex;
-  align-items: center;
+display: flex;
+align-items: center;
 `;
 
 const Avatar = styled.img`
@@ -263,33 +361,33 @@ flex-grow: 0;
 `;
 
 const Content = styled.div`
-  flex-grow: 1;
-  flex-basis: 100%
-  display: flex;
-  flex-direction: column;
+flex-grow: 1;
+flex-basis: 100%
+display: flex;
+flex-direction: column;
 `;
 
 const BlockQuote = styled.div`
 `;
 
 const Footer = styled.div`
-  display: flex;
-  margin-top: ${grid}px;
+display: flex;
+margin-top: ${grid}px;
 `;
 
 const QuoteId = styled.span`
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  margin-right: ${grid}px;
-  flex-shrink: 0;
-  flex-grow: 0;
+width: 40px;
+height: 40px;
+border-radius: 50%;
+margin-right: ${grid}px;
+flex-shrink: 0;
+flex-grow: 0;
 `;
 
 const Attribution = styled.small`
-  margin: 0;
-  margin-left: ${grid}px;
-  text-align: right;
-  flex-grow: 1;
+margin: 0;
+margin-left: ${grid}px;
+text-align: right;
+flex-grow: 1;
 `;
 

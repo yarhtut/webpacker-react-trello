@@ -100,6 +100,8 @@ form {
     height: 4rem;
     margin-bottom: .5rem;
     transition: background 85ms ease-in,border-color 85ms ease-in;
+    border: none;
+    border-bottom: 1px solid $silver;
   }
 
   input[type=submit] {
@@ -161,17 +163,44 @@ nav {
   }
 }
 
-.todo-list ul {
-  padding: 0
+ul {
+  padding: 0;
 }
-.todo-item {
+
+ul li {
   list-style: none;
 }
+
 .close {
   position: absolute;
   right: 0;
   top: 0;
   margin: 2rem;
   padding: .5rem;
-  border-radius: 30%;
+  border-radius: 5px;
+}
+
+*:focus {
+  outline: none;
+}
+
+.card-user {
+  margin: 3rem 0;
+
+  li {
+    position: relative;
+    display: inline-grid;
+    margin-right: .5rem;
+  }
+
+  img {
+    width: 2rem;
+  }
+
+  span {
+    position: absolute;
+    left: 0;
+    top: 2rem;
+    margin-left: .2rem;
+  }
 }
