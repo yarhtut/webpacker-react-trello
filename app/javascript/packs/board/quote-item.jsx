@@ -291,11 +291,13 @@ export default class QuoteItem extends React.PureComponent {
               <UserList userId={quote.id} users={this.state.users} />
               { userForm }
             </div>
+
             <div className='progress-bar'>
               <h3>CheckList</h3>
               <span>{progressBar} <small> % </small></span>
               <Line percent={progressBar} strokeWidth="1" strokeColor="DodgerBlue" />
             </div>
+
             <div className='todo-app'>
               { this.state.errorMessage && <span className='error'> {this.state.errorMessage}</span> }
               <div className='todo-list'>
