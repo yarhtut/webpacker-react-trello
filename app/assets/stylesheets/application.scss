@@ -102,6 +102,7 @@ form {
     transition: background 85ms ease-in,border-color 85ms ease-in;
     border: none;
     border-bottom: 1px solid $silver;
+    padding: 0 1rem;
   }
 
   input[type=submit] {
@@ -202,5 +203,44 @@ ul li {
     left: 0;
     top: 2rem;
     margin-left: .2rem;
+  }
+}
+
+.login-form {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 15%;
+  color: $white;
+  h1 {
+    
+  }
+
+  a {
+    color: $silver;
+  }
+
+  form {
+    margin: .5rem 0;
+    width: 30rem;
+
+    input[type=email], input[type=password] {
+      margin-top: 1rem;
+      display: inline-flex;
+      width: 98%;
+      height: 4rem;
+      margin-bottom: .5rem;
+      transition: background 85ms ease-in,border-color 85ms ease-in;
+      border: none;
+      border-bottom: 1px solid $silver;
+      padding: 0 1rem;
+    }
+    input:-webkit-autofill, textarea:-webkit-autofill, select:-webkit-autofill {
+
+      background-color: red !important;
+    }
+    input:focus {
+      background-color: $white !important;
+    }
   }
 }

@@ -27,12 +27,14 @@ export default class Board extends Component {
     this.handleToggleForm = this.handleToggleForm.bind(this);
     this.handleToggleListForm = this.handleToggleListForm.bind(this);
 
+
     const binder = this
     App.cable.subscriptions.create("ListsChannel", {
       received: function(data) {
         binder.setState({ lists:  JSON.parse(data.message), order: Object.keys(JSON.parse(data.message)) })
       }
     });
+
   }
 
   //boardRef: ?HTMLElement
@@ -179,7 +181,7 @@ export default class Board extends Component {
     const { containerHeight } = this.props;
     const listForm = this.state.toggleListForm ? (
       <form onSubmit={this.newList}>
-        <input type="text" value={this.state.listValue} onChange={this.handleListText} />
+        <input type="text" value={this.props.listValue} onChange={this.handleListText} />
         <input type="submit" value="Add Card" className='btn' />
       </form>
     ) : <NewList><button className='bg-btn' onClick={this.handleToggleListForm}>New list</button></NewList>
