@@ -11,6 +11,7 @@
     "react-dom": "^16.2.0",
     "react-modal": "^3.3.2",
     "react-sweet-progress": "^1.1.0",
+    "redux": "^4.0.0",
     "styled-components": "^3.1.6"
   },
   "devDependencies": {
